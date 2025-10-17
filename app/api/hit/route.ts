@@ -1,21 +1,24 @@
-import { createDeck } from "@/app/lib/deck";
-import { NextResponse } from "next/server";
+    // Handles hit 
 
-export async function POST(req: Request)
-{
-    const {deck , playerHand} = await req.json(); 
+    import { createDeck } from "@/app/lib/deck";
+    import { games } from "@/app/lib/gameStore";
+    import { NextResponse } from "next/server";
 
-    const newDeck = [...deck]
-    const card = newDeck.pop() 
-
-
-    if(!card)
+    export async function POST(req: Request)
     {
-        const reshuffledDeck = createDeck(); 
-        return NextResponse.json({deck:newDeck, playerHand})
+        const { deck, playerHand } = await req.json(); 
+    
+
+        const newDeck = [...deck]
+        const card = newDeck.pop() 
+
+        if(!card)
+        {
+            return NextResponse.json({error: "deck not found"},{status: 404})
+        }
+
+        const newHand = [...playerHand, card]
+        
+
+        return NextResponse.json({deck: newDeck, playerHand:newHand})
     }
-
-    const newHand = [...playerHand, card]
-
-    return NextResponse.json({deck:newDeck, playerHand:newHand})
-}
