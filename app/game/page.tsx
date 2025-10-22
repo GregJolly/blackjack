@@ -25,13 +25,29 @@ export default function Game() {
   const [result, setResult] = useState<string | null>(null);
   const [dealersTurn, setDealersTurn] = useState(false); 
   const [hitButton, setHitButton] = useState(false);
-  const [playerMoney, setPlayerMoney] = useState<number>()
+  const [playerMoney, setPlayerMoney] = useState<number>(2000)
 
+
+  async function  handleCash(win: boolean)
+  {
+      const res = await fetch("/api/money", {
+          method: "POST",
+          headers: {"Content-Type" : "application/json"},
+          body: JSON.stringify({
+              win, playerMoney
+          })
+
+      })
+
+      const data = await res.json()
+      setPlayerMoney(data.playerMoney);
+
+  }
 
 
   async function handleStart() {
     
-      const { deck, dealerHand, playerHand, playerMoney} = await startGame()
+      const { deck, dealerHand, playerHand} = await startGame()
       setDeck(deck);
       setDealerHand(dealerHand); 
       setPlayerHand(playerHand);
@@ -46,6 +62,7 @@ export default function Game() {
             console.log("BLACKJACK"); 
             setHitButton(true)
             setResult("BLACKJACK")
+            await handleCash(true)
         }
       else if(dealerScore == 21)
       {
@@ -53,6 +70,8 @@ export default function Game() {
         setDealersTurn(true)
         setHitButton(true)
         setResult("LOSE")
+
+        await handleCash(false)
       }
   } 
 
@@ -77,30 +96,32 @@ export default function Game() {
         console.log("you bust"); 
         setHitButton(true);
         setResult("BUST")
+        await handleCash(false)
     }
     else if(playerScore == 21)
     {
         console.log("you win"); 
         setHitButton(true)
         setResult("WIN")
+        await handleCash(true)
     }
 
   }
 
-  function handleStand()
+  async function handleStand()
   {
     setDealersTurn(true)
     setHitButton(true)
     dealerHand[1].hidden = false; 
-    
-    while(handScore(dealerHand) < 18 )
+    await new Promise(r => setTimeout(r, 200));
+    while(handScore(dealerHand) < 18 && handScore(dealerHand) < handScore(playerHand))
         {
             const newCard = deck.pop()
             if(!newCard) break; 
     
             dealerHand.push(newCard)
         }
-        
+        await new Promise(r => setTimeout(r, 650));
         const dealerScore = handScore(dealerHand)
     
         if(dealerScore > 21)
@@ -109,6 +130,8 @@ export default function Game() {
             setDealerHand(dealerHand)
             
             setResult("WIN"); 
+            await handleCash(true)
+
         }
         else if(dealerScore === 21)
         {
@@ -116,6 +139,7 @@ export default function Game() {
           setDealerHand(dealerHand)
           
           setResult("LOSE"); 
+          await handleCash(false)
 
         }
         else if (dealerScore > handScore(playerHand))
@@ -124,19 +148,21 @@ export default function Game() {
           setDealerHand(dealerHand)
           
           setResult("LOSE"); 
+          await handleCash(false)
         }
         else if(dealerScore == handScore(playerHand))
         {
           setDeck(deck)
           setDealerHand(dealerHand)
           setResult("PUSH")
+          
         }
         else
         {
           setDeck(deck);
           setDealerHand(dealerHand)
-          
           setResult("WIN"); 
+          await handleCash(true)
         }
   }
 
@@ -162,7 +188,7 @@ export default function Game() {
           <div className="w-64 flex justify-between item-center bg-green-950 py-2  px-6 rounded-full text-green-400  font-bold"><span className="text-amber-300"><FontAwesomeIcon icon={faCoins} /></span> <h1 className="">{playerMoney}</h1><span className="opacity-0">pla</span></div>
           <div className="flex flex-col  justify-between items-center"> 
             <DisplayCard hand={dealerHand} />
-            <div className={`text-sm flex justify-between space-x-4 bg-green-600/25 tracking-tight font-bold px-6 py-2 w-34 ${ dealersTurn===true ? "text-amber-300/100" : "text-green-200" } rounded-full uppercase`}><p>DEALER</p> {dealersTurn ? (<p className="text-white">{handScore(dealerHand)}</p>):(<div className="h-5 w-5 border-2 border-t-transparent border-white rounded-full animate-spin" />)}</div>
+            <div className={`text-sm flex justify-between space-x-4 bg-green-950/40 tracking-tight font-bold px-6 py-2 w-34 ${ dealersTurn===true ? "text-amber-300/100" : "text-green-200" } rounded-full uppercase`}><p>DEALER</p> {dealersTurn ? (<p className="text-white">{handScore(dealerHand)}</p>):(<div className="h-5 w-5 border-2 border-t-transparent border-white rounded-full animate-spin" />)}</div>
           </div>
           <div className="flex justify-center items-center h-[8rem]"> 
             {result ? ( 
@@ -176,7 +202,7 @@ export default function Game() {
           ) : <div className="text-3xl animate-pulse">♠️</div> }
           </div>
           <div className="flex flex-col justify-center items-center"> 
-              <h1 className={`text-sm flex justify-between space-x-4 bg-green-600/25 tracking-tight font-bold px-6 py-2 w-34 ${ dealersTurn===true ? "text-green-200" : "text-amber-300/100"} rounded-full uppercase`}> <p>YOU</p> <p className="text-white">{handScore(playerHand)}</p></h1>
+              <h1 className={`text-sm flex justify-between space-x-4 bg-green-950/40  tracking-tight font-bold px-6 py-2 w-34 ${ dealersTurn===true ? "text-green-200" : "text-amber-300/100"} rounded-full uppercase`}> <p>YOU</p> <p className="text-white">{handScore(playerHand)}</p></h1>
               <DisplayCard hand={playerHand} />  
           </div>
           <div className="flex items-center justify-between gap-4 "> 

@@ -16,7 +16,7 @@ export async function startGame() {
     { ...card2, hidden: true },
   ];
   const playerHand: Card[] = [card3, card4];
-  const playerMoney = 2000;
+  
 
-  return { deck, dealerHand, playerHand, playerMoney };
+  return { deck, dealerHand, playerHand };
 }
