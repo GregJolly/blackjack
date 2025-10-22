@@ -12,7 +12,7 @@ import { startGame } from "../lib/controls/start";
 import { standAction } from "../lib/standAction";
 import HitAction from "../lib/controls/hit";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faRotateLeft } from "@fortawesome/free-solid-svg-icons";
+import { faRotateLeft, faCoins } from "@fortawesome/free-solid-svg-icons";
 
 
 
@@ -25,15 +25,17 @@ export default function Game() {
   const [result, setResult] = useState<string | null>(null);
   const [dealersTurn, setDealersTurn] = useState(false); 
   const [hitButton, setHitButton] = useState(false);
+  const [playerMoney, setPlayerMoney] = useState<number>()
 
 
 
   async function handleStart() {
     
-      const { deck, dealerHand, playerHand} = await startGame()
+      const { deck, dealerHand, playerHand, playerMoney} = await startGame()
       setDeck(deck);
       setDealerHand(dealerHand); 
       setPlayerHand(playerHand);
+      setPlayerMoney(playerMoney)
       setGameState(true);
 
       const playerScore = handScore(playerHand);
@@ -156,8 +158,8 @@ export default function Game() {
     <div className="min-h-screen max-w-4xl mx-auto flex items-center justify-center">
         {gameState === false ?  <Button onClick={handleStart} >Start Game</Button> : 
         
-        (<div className="flex flex-col justify-end space-y-6 items-center p-6 ">
-           
+        (<div className="flex flex-col justify-center space-y-6 items-center p-6 ">
+          <div className="w-64 flex justify-between item-center bg-green-950 py-2  px-6 rounded-full text-green-400  font-bold"><span className="text-amber-300"><FontAwesomeIcon icon={faCoins} /></span> <h1 className="">{playerMoney}</h1><span className="opacity-0">pla</span></div>
           <div className="flex flex-col  justify-between items-center"> 
             <DisplayCard hand={dealerHand} />
             <div className={`text-sm flex justify-between space-x-4 bg-green-600/25 tracking-tight font-bold px-6 py-2 w-34 ${ dealersTurn===true ? "text-amber-300/100" : "text-green-200" } rounded-full uppercase`}><p>DEALER</p> {dealersTurn ? (<p className="text-white">{handScore(dealerHand)}</p>):(<div className="h-5 w-5 border-2 border-t-transparent border-white rounded-full animate-spin" />)}</div>

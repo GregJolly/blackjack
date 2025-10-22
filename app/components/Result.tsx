@@ -2,6 +2,7 @@ export default function Result({result} : {result: string})
 {
     if (result == "WIN")
     {
+
         return (
             <div className="text-white font-extrabold text-3xl"> YOU WIN! </div>
         )
