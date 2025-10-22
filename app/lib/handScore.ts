@@ -18,7 +18,12 @@ export function handScore(hand: Card[]): number {
 
     while(aces > 0 )
     {
-        total+11 <=21 ? total+=11 : total+=1; 
+        if (total + 11 <= 21) {
+            total += 11;
+        } else {
+            total += 1;
+        } 
+        aces--;
     }
 
     return total; 

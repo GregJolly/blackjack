@@ -9,7 +9,7 @@ export function createDeck(): Card[]{
     for(const suit of suits){
         for(const value of values)
         {
-            const name = `${getCardName(value)} of ${capitalize(suit)}}`
+            const name = `${getCardName(value)} of ${capitalize(suit)}`
             const imageUrl =`https://deckofcardsapi.com/static/img/${getImageCode(value, suit)}.png`
             deck.push({suit, value, name, imageUrl})
         }
@@ -27,7 +27,7 @@ function getCardName(value: string ){
     if(value === 'A') return "Ace"
     if(value === 'K') return "King"
     if(value === 'Q') return "Queen"
-    if(value === 'j') return "Jack"
+    if(value === 'J') return "Jack"
     return value; 
 }
 

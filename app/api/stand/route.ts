@@ -4,10 +4,10 @@ import { NextResponse } from "next/server"
 
 export async function POST(req: Request){
 
-    const {deck, dealerHand, playerHand, dealersTurn, result} = await req.json()
+    const {deck, dealerHand, playerHand} = await req.json()
 
-    let newDeck = [...deck]
-    let updatedHand = [...dealerHand]
+    const newDeck = [...deck]
+    const updatedHand = [...dealerHand]
     updatedHand[1].hidden = false
 
 

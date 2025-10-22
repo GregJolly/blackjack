@@ -18,4 +18,16 @@ export default function Result({result} : {result: string})
             <div className="text-white font-extrabold text-3xl"> DEALER WINS!</div>
         )
     }
+    else if(result == "BUST")
+        {
+            return (
+                <div className="text-white font-extrabold text-3xl"> DEALER WINS!</div>
+            )
+        }
+    else if(result == "PUSH")
+        {
+            return (
+                <div className="text-white font-extrabold text-3xl"> PUSH!</div>
+            )
+        }
 }

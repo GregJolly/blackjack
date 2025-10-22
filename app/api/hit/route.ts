@@ -1,7 +1,5 @@
     // Handles hit 
 
-    import { createDeck } from "@/app/lib/deck";
-    import { games } from "@/app/lib/gameStore";
     import { NextResponse } from "next/server";
 
     export async function POST(req: Request)
