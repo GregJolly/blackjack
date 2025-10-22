@@ -21,7 +21,7 @@ export default function Result({result} : {result: string})
     else if(result == "BUST")
         {
             return (
-                <div className="text-white font-extrabold text-3xl"> DEALER WINS!</div>
+                <div className="text-white font-extrabold text-3xl"> BUST!</div>
             )
         }
     else if(result == "PUSH")

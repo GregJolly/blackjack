@@ -11,6 +11,8 @@ import { Card } from "../lib/types";
 import { startGame } from "../lib/controls/start";
 import { standAction } from "../lib/standAction";
 import HitAction from "../lib/controls/hit";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faRotateLeft } from "@fortawesome/free-solid-svg-icons";
 
 
 
@@ -46,6 +48,7 @@ export default function Game() {
       else if(dealerScore == 21)
       {
         dealerHand[1].hidden = false
+        setDealersTurn(true)
         setHitButton(true)
         setResult("LOSE")
       }
@@ -164,7 +167,8 @@ export default function Game() {
               <div className="flex flex-col justify-center items-center gap-2">
               
                 <Result result={result} />
-                <Button onClick={handleReplay} className="bg-amber-600">Play Again</Button>
+                <Button onClick={handleReplay} className="bg-amber-600"><FontAwesomeIcon icon={faRotateLeft} className="w-5 h-5 text-white" />
+                </Button>
               
               </div>
           ) : <div className="text-3xl animate-pulse">♠️</div> }
