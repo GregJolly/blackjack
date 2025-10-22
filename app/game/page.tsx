@@ -77,18 +77,19 @@ export default function Game() {
 
   async function handleHit()
   {
-    const newDeck: Card[] = [...deck]
-    const card = newDeck.pop() 
-    
-    if(!card)
-    {
-    return 
-    }
+    const res = await fetch("/api/hit",{
+      method: "POST",
+      headers:{"Content-type" : "application/json"},
+      body: JSON.stringify({
+        deck, 
+        playerHand, 
+      })
+    })
 
-    const newHand = [...playerHand , card]
-    setDeck(newDeck)
-    setPlayerHand(newHand)
-    const playerScore = handScore(newHand)   
+    const data = await res.json()
+    setDeck(data.deck)
+    setPlayerHand(data.playerHand)
+    const playerScore = handScore(data.playerHand)   
 
     if(playerScore > 21)
     {
@@ -206,7 +207,7 @@ export default function Game() {
               <DisplayCard hand={playerHand} />  
           </div>
           <div className="flex items-center justify-between gap-4 "> 
-              <Button onClick={handleHit} disabled={hitButton} className="bg-red-600/80 py-6 w-28 text-xl uppercase text-bold text-red-100">Hit</Button>
+              <Button onClick={async () => await handleHit()} disabled={hitButton} className="bg-red-600/80 py-6 w-28 text-xl uppercase text-bold text-red-100">Hit</Button>
               <Button onClick={handleStand} disabled={hitButton} className="bg-yellow-600/80 py-6 w-28 text-xl uppercase text-bold text-red-100">Stand</Button>
           </div>
         </div>)
