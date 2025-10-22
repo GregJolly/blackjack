@@ -13,6 +13,7 @@ import { standAction } from "../lib/standAction";
 import HitAction from "../lib/controls/hit";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRotateLeft, faCoins } from "@fortawesome/free-solid-svg-icons";
+import handleCash from "../lib/handleCash";
 
 
 
@@ -27,54 +28,40 @@ export default function Game() {
   const [hitButton, setHitButton] = useState(false);
   const [playerMoney, setPlayerMoney] = useState<number>(2000)
 
-
-  async function  handleCash(win: boolean)
+  async function setMoney (win: string) 
   {
-      const res = await fetch("/api/money", {
-          method: "POST",
-          headers: {"Content-Type" : "application/json"},
-          body: JSON.stringify({
-              win, playerMoney
-          })
-
-      })
-
-      const data = await res.json()
-      setPlayerMoney(data.playerMoney);
-
+    const money = await handleCash(win, playerMoney); 
+    setPlayerMoney(money); 
   }
 
-
-  async function handleStart() {
-    
-      const { deck, dealerHand, playerHand} = await startGame()
-      setDeck(deck);
-      setDealerHand(dealerHand); 
-      setPlayerHand(playerHand);
-      setPlayerMoney(playerMoney)
-      setGameState(true);
-
-      const playerScore = handScore(playerHand);
-      const dealerScore = handScore(dealerHand)
-
-      if(playerScore == 21)
+  async function handleStart(myDeck: Card[]) {
+      
+    console.log(myDeck.length);
+      const res = await fetch("/api/start",
         {
-            console.log("BLACKJACK"); 
-            setHitButton(true)
-            setResult("BLACKJACK")
-            await handleCash(true)
+          method: "POST",
+          headers: {"Content-type": "application/json"},
+          body: JSON.stringify({
+            myDeck, dealerHand, playerHand
+          })
         }
-      else if(dealerScore == 21)
-      {
-        dealerHand[1].hidden = false
-        setDealersTurn(true)
-        setHitButton(true)
-        setResult("LOSE")
+      )
 
-        await handleCash(false)
-      }
+      const data = await res.json();
+
+      setDeck(data.deck);
+      setDealerHand(data.dealerHand); 
+      setPlayerHand(data.playerHand);
+      setPlayerMoney(data.playerMoney)
+      setGameState(data.gameState);
+      setHitButton(data.hitButton)
+      setResult(data.result)
+      setDealersTurn(data.dealersTurn)
+      setMoney(data.win)
+      
   } 
-
+  
+  
   async function handleHit()
   {
     const res = await fetch("/api/hit",{
@@ -89,101 +76,50 @@ export default function Game() {
     const data = await res.json()
     setDeck(data.deck)
     setPlayerHand(data.playerHand)
-    const playerScore = handScore(data.playerHand)   
-
-    if(playerScore > 21)
-    {
-        //you bust 
-        console.log("you bust"); 
-        setHitButton(true);
-        setResult("BUST")
-        await handleCash(false)
-    }
-    else if(playerScore == 21)
-    {
-        console.log("you win"); 
-        setHitButton(true)
-        setResult("WIN")
-        await handleCash(true)
-    }
+    setHitButton(data.hitButton) 
+    setResult(data.result)
+    setMoney(data.win)
 
   }
 
   async function handleStand()
   {
-    setDealersTurn(true)
-    setHitButton(true)
-    dealerHand[1].hidden = false; 
-    await new Promise(r => setTimeout(r, 200));
-    while(handScore(dealerHand) < 18 && handScore(dealerHand) < handScore(playerHand))
-        {
-            const newCard = deck.pop()
-            if(!newCard) break; 
     
-            dealerHand.push(newCard)
-        }
-        await new Promise(r => setTimeout(r, 650));
-        const dealerScore = handScore(dealerHand)
-    
-        if(dealerScore > 21)
-        {
-            setDeck(deck);
-            setDealerHand(dealerHand)
-            
-            setResult("WIN"); 
-            await handleCash(true)
+    const res = await fetch("/api/stand", {
+      method: "POST",
+      headers: {"Content-type" : "application/json"},
+      body: JSON.stringify({
+        deck, dealerHand, playerHand
+      })
+    })
 
-        }
-        else if(dealerScore === 21)
-        {
-          setDeck(deck);
-          setDealerHand(dealerHand)
-          
-          setResult("LOSE"); 
-          await handleCash(false)
+    const data = await res.json(); 
+    setDeck(data.deck);
+    setDealerHand(data.dealerHand);
+    setDealersTurn(data.dealersTurn);
+    setHitButton(data.hitButton);
+    setResult(data.result);
+    setMoney(data.win);
 
-        }
-        else if (dealerScore > handScore(playerHand))
-        {
-          setDeck(deck);
-          setDealerHand(dealerHand)
-          
-          setResult("LOSE"); 
-          await handleCash(false)
-        }
-        else if(dealerScore == handScore(playerHand))
-        {
-          setDeck(deck)
-          setDealerHand(dealerHand)
-          setResult("PUSH")
-          
-        }
-        else
-        {
-          setDeck(deck);
-          setDealerHand(dealerHand)
-          setResult("WIN"); 
-          await handleCash(true)
-        }
   }
 
- function handleReplay(){
+ async function handleReplay(){
+
     setDealerHand([]);
     setPlayerHand([]); 
-    setDeck([]);
     setDealersTurn(false);
     setResult("");
     setHitButton(false);
-    console.log(dealerHand);
-    console.log(playerHand);
-
-    handleStart(); 
- }
+    handleStart(deck);
+   
+    
+    
+  }
 
 
   return (
     <div className="min-h-screen max-w-4xl mx-auto flex items-center justify-center">
-        {gameState === false ?  <Button onClick={handleStart} >Start Game</Button> : 
+        {gameState === false ?  <Button onClick={async() => await handleStart(deck)} >Start Game</Button> : 
         
         (<div className="flex flex-col justify-center space-y-6 items-center p-6 ">
           <div className="w-64 flex justify-between item-center bg-green-950 py-2  px-6 rounded-full text-green-400  font-bold"><span className="text-amber-300"><FontAwesomeIcon icon={faCoins} /></span> <h1 className="">{playerMoney}</h1><span className="opacity-0">pla</span></div>
@@ -208,7 +144,7 @@ export default function Game() {
           </div>
           <div className="flex items-center justify-between gap-4 "> 
               <Button onClick={async () => await handleHit()} disabled={hitButton} className="bg-red-600/80 py-6 w-28 text-xl uppercase text-bold text-red-100">Hit</Button>
-              <Button onClick={handleStand} disabled={hitButton} className="bg-yellow-600/80 py-6 w-28 text-xl uppercase text-bold text-red-100">Stand</Button>
+              <Button onClick={async () => await handleStand()} disabled={hitButton} className="bg-yellow-600/80 py-6 w-28 text-xl uppercase text-bold text-red-100">Stand</Button>
           </div>
         </div>)
         }

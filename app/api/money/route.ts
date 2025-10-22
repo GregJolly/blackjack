@@ -8,15 +8,19 @@ export  async function POST(req: Request)
     
     let newMoney = playerMoney
 
-    if(win == true)
-    {
-        newMoney += 100; 
+
+    switch (win){
+        case "true":
+            newMoney += 100; 
+            break;
+        case "false": 
+            newMoney -= 100; 
+            break;
+        default:
+            break;
+
     }
-    else 
-    {
-        newMoney -= 100; 
-        
-    }
+
 
     return NextResponse.json({
         playerMoney: newMoney

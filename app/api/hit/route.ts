@@ -1,6 +1,7 @@
     // Handles hit 
 
-    import { NextResponse } from "next/server";
+    import { handScore } from "@/app/lib/handScore";
+import { NextResponse } from "next/server";
 
     export async function POST(req: Request)
     {
@@ -17,6 +18,37 @@
 
         const newHand = [...playerHand, card]
         
+        const playerScore = handScore(newHand)   
+        
+        if(playerScore > 21) //you bust
+        {
+            return NextResponse.json({
+                deck: newDeck, 
+                playerHand:newHand,
+                hitButton: true,
+                win:"false",
+                result: "BUST"
+            })
 
-        return NextResponse.json({deck: newDeck, playerHand:newHand})
+        }
+        else if(playerScore == 21) //you get 21
+        { 
+            return NextResponse.json({
+                deck: newDeck, 
+                playerHand:newHand,
+                hitButton: true,
+                win:"true", 
+                result: "WIN"
+            })
+        }
+
+        return NextResponse.json({
+            deck: newDeck, 
+            playerHand:newHand,
+            hitButton: false,
+            win: "", 
+            result: ""
+        })
+        
+          
     }
