@@ -1,4 +1,4 @@
-  export default async function  handleCash(win: string, playerMoney: number)
+  export default async function  handleCash(win: string, playerMoney: number )
   {
       const res = await fetch("/api/money", {
           method: "POST",

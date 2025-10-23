@@ -26,7 +26,7 @@ export default function Game() {
   const [result, setResult] = useState<string | null>(null);
   const [dealersTurn, setDealersTurn] = useState(false); 
   const [hitButton, setHitButton] = useState(false);
-  const [playerMoney, setPlayerMoney] = useState<number>(2000)
+  const [playerMoney, setPlayerMoney] = useState<number>(2000);
 
   async function setMoney (win: string) 
   {
@@ -42,7 +42,7 @@ export default function Game() {
           method: "POST",
           headers: {"Content-type": "application/json"},
           body: JSON.stringify({
-            myDeck, dealerHand, playerHand
+            myDeck, dealerHand, playerHand, playerMoney
           })
         }
       )
@@ -103,7 +103,7 @@ export default function Game() {
 
   }
 
- async function handleReplay(){
+function handleReplay(){
 
     setDealerHand([]);
     setPlayerHand([]); 
@@ -132,8 +132,7 @@ export default function Game() {
               <div className="flex flex-col justify-center items-center gap-2">
               
                 <Result result={result} />
-                <Button onClick={handleReplay} className="bg-amber-600"><FontAwesomeIcon icon={faRotateLeft} className="w-5 h-5 text-white" />
-                </Button>
+                
               
               </div>
           ) : <div className="text-3xl animate-pulse">♠️</div> }
@@ -142,10 +141,12 @@ export default function Game() {
               <h1 className={`text-sm flex justify-between space-x-4 bg-green-950/40  tracking-tight font-bold px-6 py-2 w-34 ${ dealersTurn===true ? "text-green-200" : "text-amber-300/100"} rounded-full uppercase`}> <p>YOU</p> <p className="text-white">{handScore(playerHand)}</p></h1>
               <DisplayCard hand={playerHand} />  
           </div>
-          <div className="flex items-center justify-between gap-4 "> 
+          
+         { result ? (<Button onClick={handleReplay} className="bg-amber-600 py-6 px-8 w-32 uppercase font-bold text-white"><FontAwesomeIcon icon={faRotateLeft} className="w-5 h-5 font-bold  text-white" /> <h1>Play Again</h1>
+         </Button> ): (<div className="flex items-center justify-between gap-4 "> 
               <Button onClick={async () => await handleHit()} disabled={hitButton} className="bg-red-600/80 py-6 w-28 text-xl uppercase text-bold text-red-100">Hit</Button>
               <Button onClick={async () => await handleStand()} disabled={hitButton} className="bg-yellow-600/80 py-6 w-28 text-xl uppercase text-bold text-red-100">Stand</Button>
-          </div>
+          </div>)}
         </div>)
         }
     </div>

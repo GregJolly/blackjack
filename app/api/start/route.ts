@@ -6,12 +6,10 @@ import type { Card } from "@/app/lib/types";
 import { handScore } from "@/app/lib/handScore";
 
 export async function POST(req: Request) {
-  const { myDeck } = await req.json(); 
-
-  
+  const { myDeck, playerMoney } = await req.json(); 
 
   let newDeck: Card [] = []
-
+  const money = playerMoney
   if(myDeck == null || myDeck.length < 15)
   {
     newDeck = createDeck(); 
@@ -45,7 +43,7 @@ export async function POST(req: Request) {
             dealerHand, 
             playerHand, 
             gameState:true,
-            playerMoney: 2000,
+            playerMoney: money,
             hitButton: true, 
             result: "BLACKJACK",
             win:"true",
@@ -60,7 +58,7 @@ export async function POST(req: Request) {
         dealerHand, 
         playerHand, 
         gameState:true,
-        playerMoney: 2000,
+        playerMoney: money,
         hitButton: true, 
         result: "LOSE",
         win:"false",
@@ -73,7 +71,7 @@ export async function POST(req: Request) {
       dealerHand, 
       playerHand, 
       gameState:true,
-      playerMoney: 2000,
+      playerMoney: money,
       hitButton: false,
       result: "",
       win:"", 
