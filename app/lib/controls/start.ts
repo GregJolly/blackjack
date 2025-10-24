@@ -1,22 +1,24 @@
-"use server";
-import { createDeck } from "../deck";
-import type { Card } from "../types";
+import { Card } from "../types";
 
-export async function startGame() {
-  const deck = createDeck();
-  const card1 = deck.pop();
-  const card2 = deck.pop();
-  const card3 = deck.pop();
-  const card4 = deck.pop();
+export async function handleStart(myDeck: Card[],
+    dealerHand : Card[], 
+    playerHand: Card[],
+    playerMoney: number,
+    bet: number
+  ) {
+    
+  console.log(myDeck.length);
+    const res = await fetch("/api/start",
+      {
+        method: "POST",
+        headers: {"Content-type": "application/json"},
+        body: JSON.stringify({
+          myDeck, dealerHand, playerHand, playerMoney, bet
+        })
+      }
+    )
 
-  if (!card1 || !card2 || !card3 || !card4) throw new Error("Deck error");
+    const data = await res.json();
 
-  const dealerHand: Card[] = [
-    { ...card1, hidden: false },
-    { ...card2, hidden: true },
-  ];
-  const playerHand: Card[] = [card3, card4];
-  
-
-  return { deck, dealerHand, playerHand };
-}
+    return data
+} 

@@ -6,10 +6,13 @@ import type { Card } from "@/app/lib/types";
 import { handScore } from "@/app/lib/handScore";
 
 export async function POST(req: Request) {
-  const { myDeck, playerMoney } = await req.json(); 
+  const { myDeck, playerMoney, bet } = await req.json(); 
 
   let newDeck: Card [] = []
-  const money = playerMoney
+  let money = playerMoney;
+  if (money < 0) money = 0;
+  
+  
   if(myDeck == null || myDeck.length < 15)
   {
     newDeck = createDeck(); 

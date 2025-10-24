@@ -5,6 +5,8 @@ type GameState = {
     deck: Card[],
     dealerHand: Card[],
     playerHand: Card[], 
+    playerMoney: number, 
+    result: string
     gameOver: boolean
 }
 

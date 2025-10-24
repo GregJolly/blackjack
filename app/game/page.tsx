@@ -8,12 +8,13 @@ import { handScore } from "../lib/handScore";
 import DisplayCard from "../components/displayCards";
 import Result from "../components/Result";
 import { Card } from "../lib/types";
-import { startGame } from "../lib/controls/start";
+import { handleStart } from "../lib/controls/start";
 import { standAction } from "../lib/standAction";
 import HitAction from "../lib/controls/hit";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRotateLeft, faCoins } from "@fortawesome/free-solid-svg-icons";
 import handleCash from "../lib/handleCash";
+import SetBet from "./SetBet";
 
 
 
@@ -26,40 +27,25 @@ export default function Game() {
   const [result, setResult] = useState<string | null>(null);
   const [dealersTurn, setDealersTurn] = useState(false); 
   const [hitButton, setHitButton] = useState(false);
-  const [playerMoney, setPlayerMoney] = useState<number>(2000);
+  const [bet, setBet] = useState<number>(100)
+  const [playerMoney, setPlayerMoney] = useState<number>(500);
+
 
   async function setMoney (win: string) 
   {
-    const money = await handleCash(win, playerMoney); 
+    const money = await handleCash(win, playerMoney, bet); 
     setPlayerMoney(money); 
   }
-
-  async function handleStart(myDeck: Card[]) {
-      
-    console.log(myDeck.length);
-      const res = await fetch("/api/start",
-        {
-          method: "POST",
-          headers: {"Content-type": "application/json"},
-          body: JSON.stringify({
-            myDeck, dealerHand, playerHand, playerMoney
-          })
-        }
-      )
-
-      const data = await res.json();
-
-      setDeck(data.deck);
-      setDealerHand(data.dealerHand); 
-      setPlayerHand(data.playerHand);
-      setPlayerMoney(data.playerMoney)
-      setGameState(data.gameState);
-      setHitButton(data.hitButton)
-      setResult(data.result)
-      setDealersTurn(data.dealersTurn)
-      setMoney(data.win)
-      
-  } 
+  setDeck(data.deck);
+  setDealerHand(data.dealerHand); 
+  setPlayerHand(data.playerHand);
+  setPlayerMoney(data.playerMoney)
+  setGameState(data.gameState);
+  setHitButton(data.hitButton)
+  setResult(data.result)
+  setDealersTurn(data.dealersTurn)
+  setMoney(data.win)
+  
   
   
   async function handleHit()
@@ -108,21 +94,21 @@ function handleReplay(){
     setDealerHand([]);
     setPlayerHand([]); 
     setDealersTurn(false);
-    setResult("");
+    setResult(""); 
     setHitButton(false);
-    handleStart(deck);
-   
+
     
+    start(bet);
     
   }
 
 
   return (
     <div className="min-h-screen max-w-4xl mx-auto flex items-center justify-center">
-        {gameState === false ?  <Button onClick={async() => await handleStart(deck)} >Start Game</Button> : 
+        {gameState === false ? (<SetBet bet={bet} start={start} setBet={setBet} playerMoney={playerMoney} setPlayerMoney={setPlayerMoney} />) : 
         
         (<div className="flex flex-col justify-center space-y-6 items-center p-6 ">
-          <div className="w-64 flex justify-between item-center bg-green-950 py-2  px-6 rounded-full text-green-400  font-bold"><span className="text-amber-300"><FontAwesomeIcon icon={faCoins} /></span> <h1 className="">{playerMoney}</h1><span className="opacity-0">pla</span></div>
+          <div className="w-38 flex justify-between item-center bg-green-950 py-2  px-6 rounded-full text-green-400  font-bold"><span className="text-amber-300"><FontAwesomeIcon icon={faCoins} /></span> <h1 className="">${playerMoney}</h1></div>
           <div className="flex flex-col  justify-between items-center"> 
             <DisplayCard hand={dealerHand} />
             <div className={`text-sm flex justify-between space-x-4 bg-green-950/40 tracking-tight font-bold px-6 py-2 w-34 ${ dealersTurn===true ? "text-amber-300/100" : "text-green-200" } rounded-full uppercase`}><p>DEALER</p> {dealersTurn ? (<p className="text-white">{handScore(dealerHand)}</p>):(<div className="h-5 w-5 border-2 border-t-transparent border-white rounded-full animate-spin" />)}</div>
@@ -131,11 +117,11 @@ function handleReplay(){
             {result ? ( 
               <div className="flex flex-col justify-center items-center gap-2">
               
-                <Result result={result} />
+                <Result result={result} bet={bet} />
                 
               
               </div>
-          ) : <div className="text-3xl animate-pulse">♠️</div> }
+          ) : <div className="flex justify-between py-2 bg-amber-500 rounded-full animate-pulse px-6 w-34 font-bold "><p>POT</p> <p>{bet*2}</p></div> }
           </div>
           <div className="flex flex-col justify-center items-center"> 
               <h1 className={`text-sm flex justify-between space-x-4 bg-green-950/40  tracking-tight font-bold px-6 py-2 w-34 ${ dealersTurn===true ? "text-green-200" : "text-amber-300/100"} rounded-full uppercase`}> <p>YOU</p> <p className="text-white">{handScore(playerHand)}</p></h1>
@@ -153,3 +139,4 @@ function handleReplay(){
   );
 
 }
+
