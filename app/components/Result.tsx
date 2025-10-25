@@ -1,53 +1,40 @@
 import { useState } from "react"
 
-export default function Result({result , bet} : {result: string, bet:number})
+export default function Result({ gameId} : {gameId: string})
 
 {
   
+    const [winMoney, setWinMoney] = useState(); 
+    const [message, setMessage] = useState(""); 
+    const [textColor, setTextColor] = useState("");
 
-    if (result == "WIN")
-    {
+    async function getBet(){
 
-        return (
-            <div className="flex justify-center flex-col items-center">
-            <div className="text-white font-extrabold text-3xl"> YOU WIN! </div>
-            <h1 className="text-green-400 text-2xl font-extrabold">+{bet*2}</h1>
-            </div>
+        const res = await fetch("/api/result", 
+            {
+                method: "POST",
+                headers: {"Content-type" : "application/json"},
+                body: JSON.stringify({
+                   gameId
+                })
+            }
         )
+
+        const data = await res.json()
+        setWinMoney(data.bet);
+        setMessage(data.message);
+        setTextColor(data.color)
+
+
     }
-    else if (result == "BLACKJACK")
-    {
-        return (
+
+    return (
             <div className="flex justify-center flex-col items-center">
-            <div className="text-white font-extrabold text-3xl"> BLACKJACK </div>
-            <h1 className="text-green-400 text-2xl font-extrabold">+{bet*2}</h1>
+            <div className="text-white font-extrabold text-3xl"> {message} </div>
+            <h1 className={`${textColor} text-2xl font-extrabold`}>+{winMoney}</h1>
             </div>
-        )
-        
-    }
-    else if(result == "LOSE")
-    {
-        return (
-            <div className="flex justify-center flex-col items-center">
-            <div className="text-white font-extrabold text-3xl"> DEALER WINS! </div>
-            <h1 className="text-red-500 text-2xl font-extrabold">-{bet*2}</h1>
-            </div>
-        )
-        
-    }
-    else if(result == "BUST")
-        {
-            return (
-                <div className="flex justify-center flex-col items-center">
-                <div className="text-white font-extrabold text-3xl"> BUST </div>
-                <h1 className="text-red-500 text-2xl font-extrabold">-{bet*2}</h1>
-                </div>
             )
-        }
-    else if(result == "PUSH")
-        {
-            return (
-                <div className="text-white font-extrabold text-3xl"> PUSH</div>
-            )
-        }
+
+        
+   
 }

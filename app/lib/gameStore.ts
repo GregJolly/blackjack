@@ -6,8 +6,10 @@ type GameState = {
     dealerHand: Card[],
     playerHand: Card[], 
     playerMoney: number, 
-    result: string
-    gameOver: boolean
+    result: string, 
+    win:string,
+    bet: number, 
+    gameOver: boolean,
 }
 
 export const games: Record<string, GameState> = {}

@@ -1,17 +1,18 @@
+import { games } from "@/app/lib/gameStore"
 import { handScore } from "@/app/lib/handScore"
 import { NextResponse } from "next/server"
 
 
 export async function POST(req: Request){
 
-    const {deck, dealerHand, playerHand} = await req.json()
+    const {gameId} = await req.json()
 
-    const newDeck = [...deck]
-    const updatedHand = [...dealerHand]
+    const newDeck = [...games[gameId].deck]
+    const updatedHand = [...games[gameId].dealerHand]
     updatedHand[1].hidden = false
     
     await new Promise(r => setTimeout(r, 200));
-    while(handScore(updatedHand) < 18 && handScore(updatedHand) < handScore(playerHand) )
+    while(handScore(updatedHand) < 18 && handScore(updatedHand) < handScore(games[gameId].playerHand) )
     {
         const newCard = newDeck.pop()
         if(!newCard) break; 
@@ -26,10 +27,9 @@ export async function POST(req: Request){
     {
         return NextResponse.json({
             message: "Dealer Bust! You won!", 
-            deck: newDeck,
+            
             dealerHand: updatedHand,
             dealersTurn: true,
-            hitButton: true, 
             result: "WIN",
             win: "true"
             

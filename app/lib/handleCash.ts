@@ -1,4 +1,4 @@
-  export default async function  handleCash(win: string, playerMoney: number, bet:number )
+  export default async function  handleCash(win: string, gameId: string )
   {
 
       
@@ -6,7 +6,7 @@
           method: "POST",
           headers: {"Content-Type" : "application/json"},
           body: JSON.stringify({
-              win, playerMoney, bet
+              win, gameId
           })
 
       })
