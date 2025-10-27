@@ -1,6 +1,7 @@
     "use client";
 
     import { Button } from "@/components/ui/button";
+    import { Skeleton } from "@/components/ui/skeleton";
     import { useEffect, useState } from "react";
     import { handScore } from "../lib/handScore";
     import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -225,7 +226,7 @@
             </div>
             </div>
         ) : isGameLoading ? (
-            <div className="h-5 w-5 border-2 border-t-transparent border-white rounded-full animate-spin" />
+            <SkeletonGame />
         ) : (
                 <div className="flex flex-col justify-center space-y-6 items-center p-6">
             {/* Money */}
@@ -233,7 +234,7 @@
                 <span className="text-amber-300">
                 <FontAwesomeIcon icon={faCoins} />
                 </span>
-                <h1>${myMoney}</h1>
+                <h1>${myMoney < 0 ? 0 : myMoney}</h1>
             </div>
 
             {/* Dealer */}
@@ -260,7 +261,9 @@
                 >
                 <p>DEALER</p>
                 {dealersTurn ? (
-                    <p className="text-white">{dealerScore}</p>
+                    <div className="text-white">{ isResultloading ? (
+                    <div className="h-3 w-3 border-2 border-t-transparent border-white rounded-full animate-spin" />
+                    ) : dealerScore}</div>
                 ) : (
                    <FontAwesomeIcon icon={faUser} className="text-white text-xs mt-[4px] animate-pulse" />
                 )}
@@ -291,7 +294,9 @@
                     dealersTurn ? "text-green-200" : "text-amber-300/100"
                 }`}
                 >
-                <p>YOU</p> <p className="text-white">{playerScore}</p>
+                <p>YOU</p> <div className="text-white">{isResultloading ? (
+                    <div className="h-3 w-3 border-2 border-t-transparent border-white rounded-full animate-spin" />
+                ) : playerScore}</div>
                 </h1>
                 <div className="flex justify-center items-center p-4">
                 {playerHand.map((card, i) => (
@@ -348,6 +353,32 @@
             )}
             </div>
         )}
+        </div>
+    );
+}
+
+export function SkeletonGame() {
+    return (
+        <div className="min-h-screen max-w-4xl mx-auto flex items-center justify-center text-white">
+            <div className="flex flex-col justify-center space-y-6 items-center p-6 w-full">
+                <Skeleton className="w-38 h-10 bg-green-950/50 rounded-full" />
+
+                <div className="flex flex-col items-center w-full">
+                    <Skeleton className="h-32 w-full bg-green-950/50 rounded-lg mb-4" />
+                    <Skeleton className="h-8 w-32 bg-green-950/50 rounded-full" />
+                </div>
+
+                <div className="flex justify-center items-center h-[8rem] w-full">
+                    <Skeleton className="h-20 w-48 bg-green-950/50 rounded-full" />
+                </div>
+
+                <div className="flex flex-col justify-center items-center w-full">
+                    <Skeleton className="h-32 w-full bg-green-950/50 rounded-lg mb-4" />
+                    <Skeleton className="h-8 w-32 bg-green-950/50 rounded-full" />
+                </div>
+
+                <Skeleton className="h-20 w-48 bg-green-950/50 rounded-full" />
+            </div>
         </div>
     );
 }
