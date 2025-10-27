@@ -4,7 +4,7 @@
     import { useEffect, useState } from "react";
     import { handScore } from "../lib/handScore";
     import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-    import { faRotateLeft, faCoins } from "@fortawesome/free-solid-svg-icons";
+    import { faRotateLeft,  faCoins, faHand, faPlus } from "@fortawesome/free-solid-svg-icons";
     import handleCash from "../lib/handleCash";
     import { Card } from "../lib/types";
 
@@ -235,8 +235,8 @@
                     </h1>
                 </div>
                 ) : (
-                <div className="flex justify-between py-2 bg-amber-500 rounded-full animate-pulse px-6 w-34 font-bold">
-                    <p>POT</p> <p>{bet! * 2}</p>
+                <div className="flex justify-between text-amber-950 py-2 bg-amber-500 rounded-full animate-pulse px-6 w-34 font-bold">
+                    <p >POT</p> <p>{bet! * 2}</p>
                 </div>
                 )}
             </div>
@@ -276,17 +276,21 @@
                 </Button>
             ) : (
                 <div className="flex items-center justify-between gap-4">
+            
                 <Button
                     onClick={handleHit}
-                    className="bg-red-600/80 py-6 w-28 text-xl uppercase text-bold text-red-100"
+                    className="  flex flex-col hover:scale-110 hover:bg-red-400 bg-red-600  w-20 h-20 uppercase text-bold text-red-100"
                 >
-                    Hit
+                    <FontAwesomeIcon icon={faPlus} className="text-4xl font-extrabold flex-1 text-red-950" />
+                    <h4 className="text-sm font-extrabold text-red-950">HIT</h4>
+                    
                 </Button>
                 <Button
                     onClick={handleStand}
-                    className="bg-yellow-600/80 py-6 w-28 text-xl uppercase text-bold text-red-100"
+                    className="flex flex-col hover:scale-110 hover:bg-yellow-200/80 bg-yellow-400/80 w-20 h-20 text-xl uppercase text-bold text-red-100"
                 >
-                    Stand
+                     <FontAwesomeIcon icon={faHand} className="text-4xl font font-extrabold flex-1 text-yellow-950/70" />
+                    <h4 className="text-sm font-extrabold text-yellow-950">STAND</h4>
                 </Button>
                 </div>
             )}
