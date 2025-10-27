@@ -3,11 +3,11 @@
     import { Button } from "@/components/ui/button";
     import { Skeleton } from "@/components/ui/skeleton";
     import { useEffect, useState } from "react";
-    import { handScore } from "../lib/handScore";
+    import { handScore } from "../../lib/handScore";
     import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
     import { faRotateLeft,  faCoins, faUser, faHand, faPlus } from "@fortawesome/free-solid-svg-icons";
-    import handleCash from "../lib/handleCash";
-    import { Card } from "../lib/types";
+    import handleCash from "../../lib/handleCash";
+    import { Card } from "../../lib/types";
 
     export default function Game() {
     const [gameId, setGameId] = useState<string>("");
@@ -70,6 +70,7 @@
             setMessage(resultData.message);
             setTextColor(resultData.color);
             setWin(resultData.win);
+            setMoney(resultData.win);
         }
         catch (error) {
             console.error("Error in result endpoint:", error);
@@ -125,7 +126,7 @@
         const data = await res.json();
         setPlayerHand(data.playerHand);
         setResult(data.result);
-        setMoney(data.win);
+        
 
         await displayResult();
         }  
@@ -151,7 +152,7 @@
         setDealerHand(data.dealerHand);
         setDealersTurn(true);
         setResult(data.result);
-        setMoney(data.win);
+        
 
         // Fetch final message and bet info
         await displayResult();
@@ -201,9 +202,9 @@
     }
 
     return (
-        <div className="min-h-screen max-w-4xl mx-auto flex items-center justify-center text-white">
+        <div className="max-w-4xl mx-auto flex min-h-[95vh] justify-center text-white">
         {!gameStarted ? (
-            <div className="flex items-center justify-center flex-col text-center space-y-8">
+            <div className="flex items-center  mt-60  flex-col text-center space-y-8">
                 {/* Money */}
             <div className="w-38 flex justify-between items-center bg-green-950 py-2 px-6 rounded-full text-green-400 font-bold">
                 <span className="text-amber-300">
@@ -228,7 +229,7 @@
         ) : isGameLoading ? (
             <SkeletonGame />
         ) : (
-                <div className="flex flex-col justify-center space-y-6 items-center p-6">
+            <div className="flex flex-col space-y-6 items-center p-6">
             {/* Money */}
             <div className="w-38 flex justify-between items-center bg-green-950 py-2 px-6 rounded-full text-green-400 font-bold">
                 <span className="text-amber-300">
@@ -282,8 +283,8 @@
                     </h1>
                 </div>)
                 : (
-                <div className="flex justify-between text-amber-950 py-2 bg-amber-500 rounded-full animate-pulse px-6 w-34 font-bold">
-                    <p >POT</p> <p>{bet! * 2}</p>
+                <div className=" text-amber-950 py-2 bg-amber-500 rounded-full animate-pulse px-6 w-30 h-30 font-bold">
+                    <div className="flex flex-col mt-5 items-center"> <p className="text-xs font-medium tracking-widest  text-amber-700" >POT</p> <p className="text-3xl font-extrabold">{bet! * 2}</p> </div>
                 </div>
                 )}
             </div>
