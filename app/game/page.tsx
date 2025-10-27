@@ -270,9 +270,9 @@
             {result ? (
                 <Button
                 onClick={handleReplay}
-                className="bg-amber-600 py-6 px-8 w-32 uppercase font-bold text-white"
+                className="flex flex-col p-2 bg-amber-600 hover:scale-110 hover:bg-amber-200/80 w-20 h-20 uppercase font-bold text-white"
                 >
-                <FontAwesomeIcon icon={faRotateLeft} className="w-5 h-5 text-white" /> Play Again
+                <FontAwesomeIcon icon={faRotateLeft} className="text-4xl flex-1 text-amber-950/70" /> <span className="text-sm text-sm font-extrabold text-yellow-950 ">REPLAY</span>
                 </Button>
             ) : (
                 <div className="flex items-center justify-between gap-4">
