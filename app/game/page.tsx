@@ -4,7 +4,7 @@
     import { useEffect, useState } from "react";
     import { handScore } from "../lib/handScore";
     import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-    import { faRotateLeft,  faCoins, faHand, faPlus } from "@fortawesome/free-solid-svg-icons";
+    import { faRotateLeft,  faCoins, faUser, faHand, faPlus } from "@fortawesome/free-solid-svg-icons";
     import handleCash from "../lib/handleCash";
     import { Card } from "../lib/types";
 
@@ -22,7 +22,11 @@
     const [winMoney, setWinMoney] = useState<number | null>(null);
     const [message, setMessage] = useState<string>("");
     const [textColor, setTextColor] = useState<string>("");
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     const [win, setWin] = useState<string>("");
+    const [isGameLoading, setIsGameLoading] = useState<boolean>(false);
+    const [isResultloading, setIsResultLoading] = useState<boolean>(false);
+    const [noFunds, setNoFunds] = useState<boolean>(false);
 
     const chips = [
         { name: "100", value: 100, textColor: "text-red-950", bgColor: "bg-red-500", hover: "hover:bg-red-700" },
@@ -43,9 +47,33 @@
         setMyMoney(money);
     }
 
+    async function displayResult() {  
+        try {
+            const res2 = await fetch("/api/result", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ gameId }),
+            });
+
+            const resultData = await res2.json();
+            setWinMoney(resultData.bet);
+            setMessage(resultData.message);
+            setTextColor(resultData.color);
+            setWin(resultData.win);
+        }
+        catch (error) {
+            console.error("Error in result endpoint:", error);
+            return new Response("Internal Server Error", { status: 500 });  
+        }
+        finally {
+                    setIsResultLoading(false);
+            }
+      }
     // 🎮 Create a new game
     async function createGame(betAmount: number) {
-        const res = await fetch("/api/game", {
+        setIsGameLoading(true);
+        try {
+            const res = await fetch("/api/game", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ bet: betAmount }),
@@ -63,24 +91,22 @@
         setResult(null);
         setGameStarted(true);
 
+        await displayResult();
 
-        const res2 = await fetch("/api/result", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ gameId }),
-        });
-    
-        const resultData = await res2.json();
-        setWinMoney(resultData.bet);
-        setMessage(resultData.message);
-        setTextColor(resultData.color);
-        setWin(resultData.win);
+    } catch (error) {
+            console.error("Error in createGame endpoint:", error);
+            return new Response("Internal Server Error", { status: 500 });  
+        }
+        finally {
+                    setIsGameLoading(false);
+            }
         
     }
 
     // 🃏 Player hits
     async function handleHit() {
-        const res = await fetch("/api/hit", {
+        setIsLoading(true);
+       try { const res = await fetch("/api/hit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id: gameId }),
@@ -91,18 +117,16 @@
         setResult(data.result);
         setMoney(data.win);
 
-        const res2 = await fetch("/api/result", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ gameId }),
-        });
-    
-        const resultData = await res2.json();
-        setWinMoney(resultData.bet);
-        setMessage(resultData.message);
-        setTextColor(resultData.color);
-        setWin(resultData.win);
+        await displayResult();
+        }  
+        finally {
+                    setIsLoading(false);
+            }
     }
+    
+    
+
+    
 
     // 🏁 Player stands
     async function handleStand() {
@@ -120,21 +144,13 @@
         setMoney(data.win);
 
         // Fetch final message and bet info
-        const res2 = await fetch("/api/result", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ gameId }),
-        });
-
-        const resultData = await res2.json();
-        setWinMoney(resultData.bet);
-        setMessage(resultData.message);
-        setTextColor(resultData.color);
-        setWin(resultData.win);
+        await displayResult();
     }
 
     // 🔁 Replay - start a fresh game
     async function handleReplay() {
+        setIsGameLoading(true);
+        try {
         const res = await fetch("/api/restart", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -142,6 +158,14 @@
         });
 
         const data = await res.json();
+
+        if(data.noFunds)
+        {
+            setNoFunds(true);
+            setIsGameLoading(false);
+            setGameStarted(false);
+            return;
+        }
 
         setGameId(data.gameId);
         setDealerHand(data.dealerHand);
@@ -155,6 +179,14 @@
         setWinMoney(null);
         setTextColor("");
         setWin("");
+    }
+    catch (error) {
+            console.error("Error in restart endpoint:", error);
+            return new Response("Internal Server Error", { status: 500 });  
+        }  
+        finally {
+                    setIsGameLoading(false);
+            }
 
     }
 
@@ -183,8 +215,10 @@
                 ))}
             </div>
             </div>
+        ) : isGameLoading ? (
+            <div className="h-5 w-5 border-2 border-t-transparent border-white rounded-full animate-spin" />
         ) : (
-            <div className="flex flex-col justify-center space-y-6 items-center p-6">
+                <div className="flex flex-col justify-center space-y-6 items-center p-6">
             {/* Money */}
             <div className="w-38 flex justify-between items-center bg-green-950 py-2 px-6 rounded-full text-green-400 font-bold">
                 <span className="text-amber-300">
@@ -211,7 +245,7 @@
                 ))}
                 </div>
                 <div
-                className={`text-sm flex justify-between space-x-4 bg-green-950/40 tracking-tight font-bold px-6 py-2 w-34 rounded-full uppercase ${
+                className={`text-sm flex justify-between item-center space-x-4 bg-green-950/40 tracking-tight font-bold px-6 py-2 w-34 rounded-full uppercase ${
                     dealersTurn ? "text-amber-300/100" : "text-green-200"
                 }`}
                 >
@@ -219,13 +253,16 @@
                 {dealersTurn ? (
                     <p className="text-white">{dealerScore}</p>
                 ) : (
-                    <div className="h-5 w-5 border-2 border-t-transparent border-white rounded-full animate-spin" />
+                   <FontAwesomeIcon icon={faUser} className="text-white text-xs mt-[4px] animate-pulse" />
                 )}
                 </div>
             </div>
 
             {/* Pot / Result */}
-            <div className="flex justify-center items-center h-[8rem]">
+            {isResultloading ? (
+                        <div className="h-5 w-5 border-2 border-t-transparent border-white rounded-full animate-spin" />
+                    ) : 
+                    (<div className="flex justify-center items-center h-[8rem]">
                 {result ? (
                 <div className="flex flex-col justify-center items-center gap-2">
                     <div className="text-white font-extrabold text-3xl">{message}</div>
@@ -240,7 +277,7 @@
                 </div>
                 )}
             </div>
-
+)}
             {/* Player */}
             <div className="flex flex-col justify-center items-center">
                 <h1
@@ -272,21 +309,30 @@
                 onClick={handleReplay}
                 className="flex flex-col p-2 bg-amber-600 hover:scale-110 hover:bg-amber-200/80 w-20 h-20 uppercase font-bold text-white"
                 >
-                <FontAwesomeIcon icon={faRotateLeft} className="text-4xl flex-1 text-amber-950/70" /> <span className="text-sm text-sm font-extrabold text-yellow-950 ">REPLAY</span>
+                <FontAwesomeIcon icon={faRotateLeft} className="text-4xl flex-1 text-amber-950/70" /> <span className="text-sm  font-extrabold text-yellow-950 ">REPLAY</span>
                 </Button>
             ) : (
                 <div className="flex items-center justify-between gap-4">
             
                 <Button
                     onClick={handleHit}
-                    className="  flex flex-col hover:scale-110 hover:bg-red-400 bg-red-600  w-20 h-20 uppercase text-bold text-red-100"
+                    disabled={isLoading}
+                    className="  hover:scale-110 hover:bg-red-400 bg-red-600  w-20 h-20 uppercase text-bold text-red-100"
                 >
-                    <FontAwesomeIcon icon={faPlus} className="text-4xl font-extrabold flex-1 text-red-950" />
-                    <h4 className="text-sm font-extrabold text-red-950">HIT</h4>
+                    {
+                    !isLoading ? (
+                       <div className="flex flex-col "> <FontAwesomeIcon icon={faPlus} className="text-4xl font-extrabold flex-1 text-red-950" />
+                        <h4 className="text-sm font-extrabold text-red-950">HIT</h4></div>
+                    ) : 
+                    (
+                        <div className="h-5 w-5 border-2 border-t-transparent border-white rounded-full animate-spin" />
+                    )
+                    }
                     
                 </Button>
                 <Button
                     onClick={handleStand}
+                    disabled={isLoading}
                     className="flex flex-col hover:scale-110 hover:bg-yellow-200/80 bg-yellow-400/80 w-20 h-20 text-xl uppercase text-bold text-red-100"
                 >
                      <FontAwesomeIcon icon={faHand} className="text-4xl font font-extrabold flex-1 text-yellow-950/70" />
@@ -298,4 +344,4 @@
         )}
         </div>
     );
-    }
+}
