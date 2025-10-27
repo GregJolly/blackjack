@@ -37,17 +37,26 @@
 
     // 🎯 Update displayed scores when cards change
     useEffect(() => {
-        setPlayerScore(handScore(playerHand));
-        setDealerScore(handScore(dealerHand));
+        {setPlayerScore(handScore(playerHand));
+        setDealerScore(handScore(dealerHand));}
     }, [playerHand, dealerHand]);
 
     // 💰 Fetch & update money after win/loss
     async function setMoney(win: string) {
-        const money = await handleCash(gameId);
-        setMyMoney(money);
+        
+        try {const money = await handleCash(gameId);
+        setMyMoney(money);}
+        catch (error) {
+            console.error("Error in handleCash function:", error);
+            return new Response("Internal Server Error", { status: 500 });  
+        }
+        finally {   
+            
+        }
     }
 
     async function displayResult() {  
+        setIsResultLoading(true);
         try {
             const res2 = await fetch("/api/result", {
             method: "POST",
@@ -259,25 +268,22 @@
             </div>
 
             {/* Pot / Result */}
-            {isResultloading ? (
-                        <div className="h-5 w-5 border-2 border-t-transparent border-white rounded-full animate-spin" />
-                    ) : 
-                    (<div className="flex justify-center items-center h-[8rem]">
-                {result ? (
-                <div className="flex flex-col justify-center items-center gap-2">
+                  
+            <div className="flex justify-center items-center h-[8rem]">
+                {result ? 
+                isResultloading ? (  <div className="p-10 h-5 w-5 border-8 border-t-transparent  border-white rounded-full animate-spin" />) :(<div className="flex flex-col justify-center items-center gap-2">
                     <div className="text-white font-extrabold text-3xl">{message}</div>
                     <h1 className={`${textColor} text-2xl font-extrabold`}>
                     {win === "true" ? "+" : win === "false" ? "-" : ""}
                     {win == "true" || win  == "false" ? winMoney : ""}
                     </h1>
-                </div>
-                ) : (
+                </div>)
+                : (
                 <div className="flex justify-between text-amber-950 py-2 bg-amber-500 rounded-full animate-pulse px-6 w-34 font-bold">
                     <p >POT</p> <p>{bet! * 2}</p>
                 </div>
                 )}
             </div>
-)}
             {/* Player */}
             <div className="flex flex-col justify-center items-center">
                 <h1

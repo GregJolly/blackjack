@@ -20,7 +20,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Old game not found" }, { status: 404 });
     }
 
-    if (oldGame.playerMoney < bet) {
+    if (oldGame.playerMoney + bet  < bet) {
       return NextResponse.json({ noFunds: true }, { status: 200 });
     }
 
