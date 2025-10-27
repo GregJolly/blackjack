@@ -39,7 +39,7 @@ import { NextResponse } from "next/server";
             return NextResponse.json({error: "deck not found"},{status: 404})
         }
 
-        const newHand = [...game.playerHand as Card[], card]
+        const newHand = [...(game.playerHand as Card[]), card]
 
 
         let result : string;
@@ -80,7 +80,7 @@ import { NextResponse } from "next/server";
         })
     
         return NextResponse.json({
-            playerHand: newHand,
+            playerHand: [...newHand],
             result: result,
             win: win,
             
