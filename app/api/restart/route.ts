@@ -102,6 +102,7 @@ export async function POST(req: Request) {
       playerMoney: money,
       bet,
       result,
+      gameOver,
     });
   } catch (error) {
     console.error("Error in restart endpoint:", error);

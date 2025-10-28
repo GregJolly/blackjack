@@ -56,6 +56,27 @@
         }
     }
 
+    useEffect(() => {
+        const checkActive = async () => {
+            const res = await fetch("/api/activeGame", {
+            method: "GET",
+            })
+
+            const data = await res.json();
+        if(data.active) {
+            setGameId(data.active.id);
+            setDealerHand(data.active.dealerHand);
+            setPlayerHand(data.active.playerHand);
+            setMyMoney(data.active.playerMoney);
+            setBet(data.active.bet);
+            setGameStarted(true);
+        }
+        else {
+            setGameStarted(false);
+        }
+    }
+    }, [])
+
     async function displayResult() {  
         setIsResultLoading(true);
         try {
@@ -206,6 +227,11 @@
         setWin("");
 
         setGameStarted(true);
+
+        if(data.gameOver)
+        {
+            await displayResult();
+        }
     }
     catch (error) {
             console.error("Error in restart endpoint:", error);
