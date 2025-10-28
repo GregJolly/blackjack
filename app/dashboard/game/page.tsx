@@ -28,7 +28,7 @@
     const [isGameLoading, setIsGameLoading] = useState<boolean>(false);
     const [isResultloading, setIsResultLoading] = useState<boolean>(false);
     const [noFunds, setNoFunds] = useState<boolean>(false);
-
+    const [isDealerLoading, setIsDealerLoading] = useState<boolean>(false);
     const chips = [
         { name: "100", value: 100, textColor: "text-red-950", bgColor: "bg-red-500", hover: "hover:bg-red-700" },
         { name: "250", value: 250, textColor: "text-yellow-950", bgColor: "bg-yellow-500", hover: "hover:bg-yellow-700" },
@@ -141,6 +141,8 @@
 
     // 🏁 Player stands
     async function handleStand() {
+        setIsDealerLoading(true);
+        try {
         const res = await fetch("/api/stand", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -152,10 +154,17 @@
         setDealerHand(data.dealerHand);
         setDealersTurn(true);
         setResult(data.result);
+    } catch (error) { 
+            console.error("Error in stand endpoint:", error);
+            return new Response("Internal Server Error", { status: 500 });
+     }
+     finally {
+                    setIsDealerLoading(false);
+            }
         
-
         // Fetch final message and bet info
         await displayResult();
+   
     }
 
     // 🔁 Replay - start a fresh game
@@ -202,7 +211,7 @@
     }
 
     return (
-        <div className="flex min-h-[95vh]  justify-center text-white">
+        <div className="flex min-h-[95vh] max-w-7xl justify-center text-white">
         {!gameStarted ? (
             <div className="flex items-center flex-col mt-60 text-center space-y-8">
                 {/* Money */}
@@ -256,7 +265,7 @@
                 ))}
                 </div>
                 <div
-                className={`text-sm flex justify-center item-center space-x-4 bg-green-950/40 tracking-tight font-bold px-6 py-2 w-2xl rounded-full uppercase ${
+                className={`text-sm flex justify-center item-center space-x-4 bg-green-950/40 tracking-tight font-bold px-6 py-2 w-[20rem] md:w-2xl rounded-full uppercase ${
                     dealersTurn ? "text-amber-300/100" : "text-green-200"
                 }`}
                 >
@@ -293,7 +302,7 @@
             {/* Player */}
             <div className="flex flex-col justify-center items-center">
                 <h1
-                className={`text-sm flex justify-center space-x-4 bg-green-950/40 tracking-tight w-2xl font-bold px-6 py-2 rounded-full uppercase ${
+                className={`text-sm flex justify-center space-x-4 bg-green-950/40 tracking-tight w-[20rem] md:w-2xl font-bold px-6 py-2 rounded-full uppercase ${
                     dealersTurn ? "text-green-200" : "text-amber-300/100"
                 }`}
                 >
@@ -333,12 +342,12 @@
             
                 <Button
                     onClick={handleHit}
-                    disabled={isLoading}
-                    className="  hover:scale-110 hover:bg-red-400 bg-red-600  w-20 h-20 uppercase text-bold text-red-100"
+                    disabled={isLoading || isDealerLoading}
+                    className="  hover:scale-110 hover:bg-red-400 bg-red-600  w-20 h-25 uppercase text-bold text-red-100"
                 >
                     {
                     !isLoading ? (
-                       <div className="flex flex-col "> <FontAwesomeIcon icon={faPlus} className="text-4xl font-extrabold flex-1 text-red-950" />
+                       <div className="flex flex-col gap-2"> <FontAwesomeIcon icon={faPlus} className="text-4xl font-extrabold flex-1 text-red-950" />
                         <h4 className="text-sm font-extrabold text-red-950">HIT</h4></div>
                     ) : 
                     (
@@ -349,12 +358,13 @@
                 </Button>
                 <Button
                     onClick={handleStand}
-                    disabled={isLoading}
-                    className="flex flex-col hover:scale-110 hover:bg-yellow-200/80 bg-yellow-400/80 w-20 h-20 text-xl uppercase text-bold text-red-100"
+                    disabled={isLoading || isDealerLoading}
+                    className="flex flex-col hover:scale-110  hover:bg-yellow-200/80 bg-yellow-400/80 w-20 h-25 text-xl uppercase text-bold text-red-100"
                 >
-                     <FontAwesomeIcon icon={faHand} className="text-4xl font font-extrabold flex-1 text-yellow-950/70" />
-                    <h4 className="text-sm font-extrabold text-yellow-950">STAND</h4>
-                </Button>
+                    {isDealerLoading ? (                        <div className="h-5 w-5 border-2 border-t-transparent border-white rounded-full animate-spin" />
+):( <div className="flex flex-col  gap-2"><FontAwesomeIcon icon={faHand} className="text-4xl font font-extrabold flex-1 text-yellow-950/70" />
+                    <h4 className="text-sm font-extrabold mt-1 text-yellow-950">STAND</h4></div>
+               )} </Button>
                 </div>
             )}
             </div>
@@ -362,29 +372,20 @@
         </div>
     );
 }
-
 export function SkeletonGame() {
     return (
-        <div className="min-h-[95vh] max-w-4xl mx-auto flex items-center justify-center text-white">
-            <div className="flex flex-col justify-center space-y-6 items-center w-full">
-                <Skeleton className="w-38 h-10 bg-green-950/50 rounded-full" />
-
-                <div className="flex flex-col items-center w-full">
-                    <Skeleton className="h-32 w-full bg-green-950/50 rounded-lg mb-4" />
-                    <Skeleton className="h-8 w-32 bg-green-950/50 rounded-full" />
-                </div>
-
-                <div className="flex justify-center items-center h-[8rem] w-full">
-                    <Skeleton className="h-20 w-48 bg-green-950/50 rounded-full" />
-                </div>
-
-                <div className="flex flex-col justify-center items-center w-full">
-                    <Skeleton className="h-32 w-full bg-green-950/50 rounded-lg mb-4" />
-                    <Skeleton className="h-8 w-32 bg-green-950/50 rounded-full" />
-                </div>
-
-                <Skeleton className="h-20 w-48 bg-green-950/50 rounded-full" />
-            </div>
+      <div className="h-[80vh] w-full flex items-center justify-center text-white overflow-hidden">
+        <div className="flex flex-col justify-center items-center bg-green-950/30 rounded-2xl p-10 w-[90%] max-w-4xl h-[80vh] space-y-6 shadow-lg">
+          {/* Money bar */}
+          <Skeleton className="h-10 w-40 rounded-full bg-green-950/60" />
+  
+          {/* Central game area (dealer + cards + pot + player combined visually) */}
+        
+  
+         
         </div>
+      </div>
     );
-}
+  }
+  
+  

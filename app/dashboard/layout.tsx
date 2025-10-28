@@ -11,7 +11,7 @@ export default function DashboardLayout({
       <aside className="hidden  w-[200px] flex-col md:flex">
         <DashboardNav />
       </aside>
-      <main>{children}</main>
+      <main className="overflow-hidden">{children}</main>
     </div>
   </div>
   )
