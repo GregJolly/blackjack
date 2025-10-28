@@ -70,7 +70,7 @@
             setMessage(resultData.message);
             setTextColor(resultData.color);
             setWin(resultData.win);
-            setMoney(resultData.win);
+            setMyMoney(resultData.playerMoney);
         }
         catch (error) {
             console.error("Error in result endpoint:", error);
@@ -102,7 +102,10 @@
         setResult(null);
         setGameStarted(true);
 
-        await displayResult();
+        if(data.gameOver)
+        {
+            await displayResult();
+        }
 
     } catch (error) {
             console.error("Error in createGame endpoint:", error);
@@ -187,6 +190,8 @@
             return;
         }
 
+        setMyMoney(data.playerMoney);
+
         setGameId(data.gameId);
         setDealerHand(data.dealerHand);
         setPlayerHand(data.playerHand);
@@ -199,6 +204,8 @@
         setWinMoney(null);
         setTextColor("");
         setWin("");
+
+        setGameStarted(true);
     }
     catch (error) {
             console.error("Error in restart endpoint:", error);
@@ -295,7 +302,7 @@
                 </div>)
                 : (
                 <div className=" text-amber-950 py-2 bg-amber-500 rounded-full animate-pulse px-6 w-30 h-30 font-bold">
-                    <div className="flex flex-col mt-5 items-center"> <p className="text-xs font-medium tracking-widest  text-amber-700" >POT</p> <p className="text-3xl font-extrabold">{bet! * 2}</p> </div>
+                    <div className="flex flex-col mt-5 items-center"> <p className="text-xs font-medium tracking-widest  text-amber-700" >POT</p> <p className="text-3xl font-extrabold">${bet! * 2}</p> </div>
                 </div>
                 )}
             </div>
@@ -333,7 +340,7 @@
             {result ? (
                 <Button
                 onClick={handleReplay}
-                className="flex flex-col p-2 bg-amber-600 hover:scale-110 hover:bg-amber-200/80 w-20 h-20 uppercase font-bold text-white"
+                className="flex flex-col  p-2 bg-amber-600 hover:scale-110 hover:bg-amber-200/80 w-20 h-25 uppercase font-bold text-white"
                 >
                 <FontAwesomeIcon icon={faRotateLeft} className="text-4xl flex-1 text-amber-950/70" /> <span className="text-sm  font-extrabold text-yellow-950 ">REPLAY</span>
                 </Button>
@@ -347,7 +354,7 @@
                 >
                     {
                     !isLoading ? (
-                       <div className="flex flex-col gap-2"> <FontAwesomeIcon icon={faPlus} className="text-4xl font-extrabold flex-1 text-red-950" />
+                       <div className="flex flex-col gap-2"> <FontAwesomeIcon icon={faPlus} className="text-4xl font-extrabold flex-1 text-red-950/70" />
                         <h4 className="text-sm font-extrabold text-red-950">HIT</h4></div>
                     ) : 
                     (

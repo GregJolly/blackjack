@@ -20,6 +20,7 @@ export async function POST(req: Request) {
         bet: true,
         win: true,
         result: true,
+        gameOver: true,
       },
     });
 
@@ -28,6 +29,16 @@ export async function POST(req: Request) {
         { error: "Game not found" },
         { status: 404 }
       );
+    }
+
+    if (!game.gameOver ) {
+      return NextResponse.json({
+        bet: game.bet,
+        message: "",          // no message yet
+        color: "",            // no color yet
+        playerMoney: game.playerMoney, // unchanged
+        win: game.win ?? "",
+      });
     }
 
     let newMoney = game.playerMoney;
@@ -48,7 +59,6 @@ export async function POST(req: Request) {
         break;
 
       case "false":
-        newMoney -= bet;
         color = "text-red-400";
         if (game.result === "BUST") {  
             message = "YOU BUST!";
@@ -62,6 +72,7 @@ export async function POST(req: Request) {
 
       default:
         message = "PUSH";
+        newMoney += bet;
         color = "text-yellow-400";
         break;
     }

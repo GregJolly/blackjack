@@ -69,6 +69,7 @@ export async function POST(req: Request) {
       betMoney: game.bet,
       result: game.result,
       win: game.win,
+      gameOver: game.gameOver,
     });
   } catch (err) {
     console.error("❌ Error creating game:", err);
