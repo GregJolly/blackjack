@@ -202,9 +202,9 @@
     }
 
     return (
-        <div className="max-w-4xl mx-auto flex min-h-[95vh] justify-center text-white">
+        <div className="flex min-h-[95vh]  justify-center text-white">
         {!gameStarted ? (
-            <div className="flex items-center  mt-60  flex-col text-center space-y-8">
+            <div className="flex items-center flex-col mt-60 text-center space-y-8">
                 {/* Money */}
             <div className="w-38 flex justify-between items-center bg-green-950 py-2 px-6 rounded-full text-green-400 font-bold">
                 <span className="text-amber-300">
@@ -229,7 +229,7 @@
         ) : isGameLoading ? (
             <SkeletonGame />
         ) : (
-            <div className="flex flex-col space-y-6 items-center p-6">
+            <div className="flex flex-col space-y-5 items-center ">
             {/* Money */}
             <div className="w-38 flex justify-between items-center bg-green-950 py-2 px-6 rounded-full text-green-400 font-bold">
                 <span className="text-amber-300">
@@ -240,7 +240,7 @@
 
             {/* Dealer */}
             <div className="flex flex-col items-center">
-                <div className="flex justify-center items-center p-4">
+                <div className="flex justify-center items-center ml-12 p-4">
                 {dealerHand.map((card, i) => (
                     <img
                     key={i}
@@ -256,10 +256,11 @@
                 ))}
                 </div>
                 <div
-                className={`text-sm flex justify-between item-center space-x-4 bg-green-950/40 tracking-tight font-bold px-6 py-2 w-34 rounded-full uppercase ${
+                className={`text-sm flex justify-center item-center space-x-4 bg-green-950/40 tracking-tight font-bold px-6 py-2 w-2xl rounded-full uppercase ${
                     dealersTurn ? "text-amber-300/100" : "text-green-200"
                 }`}
                 >
+                <div className="flex items-center justify-between w-30">
                 <p>DEALER</p>
                 {dealersTurn ? (
                     <div className="text-white">{ isResultloading ? (
@@ -269,11 +270,12 @@
                    <FontAwesomeIcon icon={faUser} className="text-white text-xs mt-[4px] animate-pulse" />
                 )}
                 </div>
+                </div>
             </div>
 
             {/* Pot / Result */}
                   
-            <div className="flex justify-center items-center h-[8rem]">
+            <div className="flex justify-center items-center h-[7rem]">
                 {result ? 
                 isResultloading ? (  <div className="p-10 h-5 w-5 border-8 border-t-transparent  border-white rounded-full animate-spin" />) :(<div className="flex flex-col justify-center items-center gap-2">
                     <div className="text-white font-extrabold text-3xl">{message}</div>
@@ -291,15 +293,18 @@
             {/* Player */}
             <div className="flex flex-col justify-center items-center">
                 <h1
-                className={`text-sm flex justify-between space-x-4 bg-green-950/40 tracking-tight font-bold px-6 py-2 w-34 rounded-full uppercase ${
+                className={`text-sm flex justify-center space-x-4 bg-green-950/40 tracking-tight w-2xl font-bold px-6 py-2 rounded-full uppercase ${
                     dealersTurn ? "text-green-200" : "text-amber-300/100"
                 }`}
                 >
+                <div className="flex items-center justify-between w-30">
                 <p>YOU</p> <div className="text-white">{isResultloading ? (
                     <div className="h-3 w-3 border-2 border-t-transparent border-white rounded-full animate-spin" />
-                ) : playerScore}</div>
+                ) : playerScore}
+                </div>
+                </div>
                 </h1>
-                <div className="flex justify-center items-center p-4">
+                <div className="flex justify-center items-center ml-12 p-4">
                 {playerHand.map((card, i) => (
                     <img
                     key={i}
@@ -360,8 +365,8 @@
 
 export function SkeletonGame() {
     return (
-        <div className="min-h-screen max-w-4xl mx-auto flex items-center justify-center text-white">
-            <div className="flex flex-col justify-center space-y-6 items-center p-6 w-full">
+        <div className="min-h-[95vh] max-w-4xl mx-auto flex items-center justify-center text-white">
+            <div className="flex flex-col justify-center space-y-6 items-center w-full">
                 <Skeleton className="w-38 h-10 bg-green-950/50 rounded-full" />
 
                 <div className="flex flex-col items-center w-full">
