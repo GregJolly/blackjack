@@ -82,9 +82,9 @@ export async function POST(req: Request) {
         dealerHand[1].hidden = false;
         result = "LOSE";
         win = "false";
-        message = "DEALER BLACKJACK!";
+        message = "DEALER WINS!";
         textColor = "text-red-400";
-        winMoney = 0;
+        winMoney = bet;
         gameOver = true;
       }
 
@@ -118,6 +118,10 @@ export async function POST(req: Request) {
       bet,
       result: result,
       gameOver,
+      message,
+      textColor,
+      winMoney,
+      win,
     });
   } catch (error) {
     console.error("Error in restart endpoint:", error);

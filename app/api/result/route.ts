@@ -37,7 +37,7 @@ export async function POST(req: Request) {
         message: "",          // no message yet
         textColor: "",            // no color yet
         playerMoney: game.playerMoney, // unchanged
-        wn: game.win ?? "",
+        win: game.win ?? "",
       });
     }
 
@@ -85,8 +85,8 @@ export async function POST(req: Request) {
 
     return NextResponse.json({
       bet,
-      message,
-      textColor,
+      message: message,
+      textColor: textColor,
       playerMoney: newMoney,
       win : game.win,
     });

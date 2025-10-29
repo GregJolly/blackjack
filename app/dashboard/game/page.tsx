@@ -218,6 +218,8 @@
 
     // 🔁 Replay - start a fresh game
     async function handleReplay() {
+        
+
         setIsGameLoading(true);
         try {
         const res = await fetch("/api/restart", {
@@ -225,6 +227,18 @@
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ oldId: gameId, bet, myMoney}),
         });
+
+        setGameId("");
+        setDealerHand([]);
+        setPlayerHand([]);
+        setDealerScore(0);
+        setPlayerScore(0);
+        setResult(null);
+        setMessage("");
+        setWinMoney(null);
+        setTextColor("");
+        setWin("");
+        
 
         const data = await res.json();
 
@@ -237,7 +251,6 @@
         }
 
         setMyMoney(data.playerMoney);
-
         setGameId(data.gameId);
         setDealerHand(data.dealerHand);
         setPlayerHand(data.playerHand);
@@ -255,6 +268,7 @@
             setWinMoney(data.winMoney);
             setTextColor(data.textColor);
             setWin(data.win);
+           
 
             // force React to wait for next render tick (guarantees UI update)
             await new Promise((resolve) => setTimeout(resolve, 50));
