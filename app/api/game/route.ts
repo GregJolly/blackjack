@@ -3,6 +3,7 @@ import { createDeck } from "@/app/lib/deck";
 import { handScore } from "@/app/lib/handScore";
 import { NextResponse } from "next/server";
 import { randomUUID } from "crypto";
+import { text } from "stream/consumers";
 
 export async function POST(req: Request) {
   try {
@@ -32,17 +33,36 @@ export async function POST(req: Request) {
 
     let result = "";
     let win = "";
+    let message = "";
+    let textColor = "" 
+    let winMoney: number = 0; 
     let gameOver = false;
 
+    if(playerScore === 21 || dealerScore === 21)
+    {
+      gameOver = true;
+      dealerHand[1].hidden = false;
+    }
     if (playerScore === 21) {
       result = "BLACKJACK";
       win = "true";
+      message = "BLACKJACK!";
+      textColor = "text-green-400";
+      winMoney = bet;
       gameOver = true;
     } else if (dealerScore === 21) {
       dealerHand[1].hidden = false;
       result = "LOSE";
       win = "false";
+      message = "DEALER WINS!";
+      textColor = "text-red-400";
+      winMoney = bet;
       gameOver = true;
+    }
+    else{
+      result = "";
+      win = "";
+      gameOver = false; 
     }
 
     // ✅ Save to Supabase via Prisma
@@ -70,7 +90,10 @@ export async function POST(req: Request) {
       result: game.result,
       win: game.win,
       gameOver: game.gameOver,
-    });
+      message,
+      textColor,
+      winMoney
+    });    
   } catch (err) {
     console.error("❌ Error creating game:", err);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });

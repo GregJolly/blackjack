@@ -35,21 +35,21 @@ export async function POST(req: Request) {
       return NextResponse.json({
         bet: game.bet,
         message: "",          // no message yet
-        color: "",            // no color yet
+        textColor: "",            // no color yet
         playerMoney: game.playerMoney, // unchanged
-        win: game.win ?? "",
+        wn: game.win ?? "",
       });
     }
 
     let newMoney = game.playerMoney;
     const bet = game.bet;
     let message = "";
-    let color = "";
+    let textColor = "";
 
     switch (game.win) {
       case "true":
         newMoney += bet * 2;
-        color = "text-green-400";
+        textColor = "text-green-400";
         if (game.result === "BLACKJACK") {
             message = "BLACKJACK!"
         }
@@ -59,7 +59,7 @@ export async function POST(req: Request) {
         break;
 
       case "false":
-        color = "text-red-400";
+        textColor = "text-red-400";
         if (game.result === "BUST") {  
             message = "YOU BUST!";
             break;
@@ -73,7 +73,7 @@ export async function POST(req: Request) {
       default:
         message = "PUSH";
         newMoney += bet;
-        color = "text-yellow-400";
+        textColor = "text-yellow-400";
         break;
     }
 
@@ -86,7 +86,7 @@ export async function POST(req: Request) {
     return NextResponse.json({
       bet,
       message,
-      color,
+      textColor,
       playerMoney: newMoney,
       win : game.win,
     });

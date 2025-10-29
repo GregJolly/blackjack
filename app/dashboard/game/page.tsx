@@ -9,6 +9,7 @@
     import handleCash from "../../lib/handleCash";
     import { Card } from "../../lib/types";
 
+
     export default function Game() {
     const [gameId, setGameId] = useState<string>("");
     const [gameStarted, setGameStarted] = useState(false);
@@ -29,6 +30,7 @@
     const [isResultloading, setIsResultLoading] = useState<boolean>(false);
     const [noFunds, setNoFunds] = useState<boolean>(false);
     const [isDealerLoading, setIsDealerLoading] = useState<boolean>(false);
+    const [gameOver, setGameOver] = useState<boolean>(false);
     const chips = [
         { name: "100", value: 100, textColor: "text-red-950", bgColor: "bg-red-500", hover: "hover:bg-red-700" },
         { name: "250", value: 250, textColor: "text-yellow-950", bgColor: "bg-yellow-500", hover: "hover:bg-yellow-700" },
@@ -89,7 +91,7 @@
             const resultData = await res2.json();
             setWinMoney(resultData.bet);
             setMessage(resultData.message);
-            setTextColor(resultData.color);
+            setTextColor(resultData.textColor);
             setWin(resultData.win);
             setMyMoney(resultData.playerMoney);
         }
@@ -120,13 +122,36 @@
         setDealerScore(handScore(data.dealerHand));
         setPlayerScore(handScore(data.playerHand));
         setBet(betAmount);
-        setResult(null);
+    
+        if (data.gameOver) {
+            // reveal dealer cards
+            setDealersTurn(true);
+            setGameOver(true);
+          
+            // set the result fields first
+            setResult(data.result);
+            setMessage(data.message);
+            setWinMoney(data.winMoney);
+            setTextColor(data.textColor);
+            setWin(data.win);
+          
+            // force React to wait for next render tick (guarantees UI update)
+            await new Promise((resolve) => setTimeout(resolve, 50));
+          
+            // now remove loading spinner
+            setIsResultLoading(false);
+          }        
+        else {
+
+                setResult(null);
+                setMessage("");
+                setWinMoney(null);
+                setTextColor("");
+                setWin("");
+                setGameOver(false);
+            }
         setGameStarted(true);
 
-        if(data.gameOver)
-        {
-            await displayResult();
-        }
 
     } catch (error) {
             console.error("Error in createGame endpoint:", error);
@@ -218,20 +243,40 @@
         setPlayerHand(data.playerHand);
         setDealerScore(handScore(data.dealerHand));
         setPlayerScore(handScore(data.playerHand));
-        setResult(null);
         setDealersTurn(false);
-        setResult(null);
-        setMessage("");
-        setWinMoney(null);
-        setTextColor("");
-        setWin("");
+        if (data.gameOver) {
+  // reveal dealer cards
+            setDealersTurn(true);
+            setGameOver(true);
+
+            // set the result fields first
+            setResult(data.result);
+            setMessage(data.message);
+            setWinMoney(data.winMoney);
+            setTextColor(data.textColor);
+            setWin(data.win);
+
+            // force React to wait for next render tick (guarantees UI update)
+            await new Promise((resolve) => setTimeout(resolve, 50));
+
+            // now remove loading spinner
+            setIsResultLoading(false);
+            console.log(message)
+        }
+        else {
+            setResult(null);
+            setMessage("");
+            setWinMoney(null);
+            setTextColor("");
+            setWin("");
+            setGameOver(false);
+        }
+
+        
+
+        
 
         setGameStarted(true);
-
-        if(data.gameOver)
-        {
-            await displayResult();
-        }
     }
     catch (error) {
             console.error("Error in restart endpoint:", error);
@@ -246,7 +291,7 @@
     return (
         <div className="flex min-h-[95vh] max-w-7xl justify-center text-white">
         {!gameStarted ? (
-            <div className="flex items-center flex-col mt-60 text-center space-y-8">
+            <div className="flex items-center flex-col mt-50 text-center space-y-8">
                 {/* Money */}
             <div className="w-38 flex justify-between items-center bg-green-950 py-2 px-6 rounded-full text-green-400 font-bold">
                 <span className="text-amber-300">
@@ -304,7 +349,7 @@
                 >
                 <div className="flex items-center justify-between w-30">
                 <p>DEALER</p>
-                {dealersTurn ? (
+                {dealersTurn || gameOver ? (
                     <div className="text-white">{ isResultloading ? (
                     <div className="h-3 w-3 border-2 border-t-transparent border-white rounded-full animate-spin" />
                     ) : dealerScore}</div>
@@ -318,19 +363,25 @@
             {/* Pot / Result */}
                   
             <div className="flex justify-center items-center h-[7rem]">
-                {result ? 
-                isResultloading ? (  <div className="p-10 h-5 w-5 border-8 border-t-transparent  border-white rounded-full animate-spin" />) :(<div className="flex flex-col justify-center items-center gap-2">
-                    <div className="text-white font-extrabold text-3xl">{message}</div>
-                    <h1 className={`${textColor} text-2xl font-extrabold`}>
-                    {win === "true" ? "+" : win === "false" ? "-" : ""}
-                    {win == "true" || win  == "false" ? winMoney : ""}
-                    </h1>
-                </div>)
-                : (
-                <div className=" text-amber-950 py-2 bg-amber-500 rounded-full animate-pulse px-6 w-30 h-30 font-bold">
-                    <div className="flex flex-col mt-5 items-center"> <p className="text-xs font-medium tracking-widest  text-amber-700" >POT</p> <p className="text-3xl font-extrabold">${bet! * 2}</p> </div>
-                </div>
-                )}
+            {isResultloading ? (
+  <div className="p-10 h-5 w-5 border-8 border-t-transparent border-white rounded-full animate-spin" />
+) : result ? (
+  <div className="flex flex-col justify-center items-center gap-2">
+    <div className="text-white font-extrabold text-3xl">{message}</div>
+    <h1 className={`${textColor} text-2xl font-extrabold`}>
+      {win === "true" ? "+" : win === "false" ? "-" : ""}
+      {win === "true" || win === "false" ? winMoney : ""}
+    </h1>
+  </div>
+) : (
+  <div className="text-amber-950 py-2 bg-amber-500 rounded-full animate-pulse px-6 w-30 h-30 font-bold">
+    <div className="flex flex-col mt-5 items-center">
+      <p className="text-xs font-medium tracking-widest text-amber-700">POT</p>
+      <p className="text-3xl font-extrabold">${bet! * 2}</p>
+    </div>
+  </div>
+)}
+
             </div>
             {/* Player */}
             <div className="flex flex-col justify-center items-center">

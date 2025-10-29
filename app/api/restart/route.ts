@@ -61,18 +61,33 @@ export async function POST(req: Request) {
 
     let result = "";
     let win = "";
+    let message = "";
+    let textColor = ""
+    let winMoney: number = 0; 
     let gameOver = false;
 
-    if (playerScore === 21) {
-      result = "BLACKJACK";
-      win = "true";
-      gameOver = true;
-    } else if (dealerScore === 21) {
-      dealerHand[1].hidden = false;
-      result = "LOSE";
-      win = "false";
-      gameOver = true;
-    }
+    if(playerScore === 21 || dealerScore === 21)
+      {
+        gameOver = true;
+        dealerHand[1].hidden = false;
+      }
+      if (playerScore === 21) {
+        result = "BLACKJACK";
+        win = "true";
+        message = "BLACKJACK!";
+        textColor = "text-green-400";
+        winMoney = bet * 2;
+        gameOver = true;
+      } else if (dealerScore === 21) {
+        dealerHand[1].hidden = false;
+        result = "LOSE";
+        win = "false";
+        message = "DEALER BLACKJACK!";
+        textColor = "text-red-400";
+        winMoney = 0;
+        gameOver = true;
+      }
+
 
     // ✅ Use a transaction for safety
     const [game] = await prisma.$transaction([
@@ -101,7 +116,7 @@ export async function POST(req: Request) {
       playerHand,
       playerMoney: money,
       bet,
-      result,
+      result: result,
       gameOver,
     });
   } catch (error) {
