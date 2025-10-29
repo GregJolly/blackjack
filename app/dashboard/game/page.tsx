@@ -5,7 +5,7 @@
     import { useEffect, useState } from "react";
     import { handScore } from "../../lib/handScore";
     import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-    import { faRotateLeft,  faCoins, faUser, faHand, faPlus } from "@fortawesome/free-solid-svg-icons";
+    import { faRotateLeft,  faCoins, faUser, faHand, faPlus, faSackDollar} from "@fortawesome/free-solid-svg-icons";
     import handleCash from "../../lib/handleCash";
     import { Card } from "../../lib/types";
 
@@ -302,6 +302,24 @@
 
     }
 
+    // 🎯 Let player change their bet
+    function handleSetBet() {
+        setGameStarted(false);
+        setGameId("");
+        setDealerHand([]);
+        setPlayerHand([]);
+        setDealerScore(0);
+        setPlayerScore(0);
+        setResult(null);
+        setMessage("");
+        setWinMoney(null);
+        setTextColor("");
+        setWin("");
+        setGameOver(false);
+        setDealersTurn(false);
+    }
+  
+
     return (
         <div className="flex min-h-[95vh] max-w-7xl justify-center text-white">
         {!gameStarted ? (
@@ -429,12 +447,25 @@
 
             {/* Buttons */}
             {result ? (
+                <div className="flex items-center justify-between gap-4">
+                    <Button
+                onClick={handleSetBet}
+                className="flex flex-col  p-2 bg-green-600 hover:scale-110 hover:bg-green-200/80 w-20 h-25 uppercase font-bold text-white"
+                >
+                <div className="flex-1 ">
+                <FontAwesomeIcon icon={faSackDollar} className="text-5xl mt-1 flex-1 text-green-950/70" /> 
+                <FontAwesomeIcon icon={faPlus} className="text-xl -ml-3 mb-5 text-green-950/70" /> 
+                </div>
+                <span className="text-sm  font-extrabold text-yellow-950 ">SET BET</span>
+                </Button>
                 <Button
                 onClick={handleReplay}
                 className="flex flex-col  p-2 bg-amber-600 hover:scale-110 hover:bg-amber-200/80 w-20 h-25 uppercase font-bold text-white"
                 >
                 <FontAwesomeIcon icon={faRotateLeft} className="text-4xl flex-1 text-amber-950/70" /> <span className="text-sm  font-extrabold text-yellow-950 ">REPLAY</span>
                 </Button>
+                
+                </div>
             ) : (
                 <div className="flex items-center justify-between gap-4">
             
