@@ -317,6 +317,7 @@
         setWin("");
         setGameOver(false);
         setDealersTurn(false);
+       
     }
   
 

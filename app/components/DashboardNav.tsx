@@ -14,13 +14,13 @@ export const navItems = [
 export default function DashboardNav() {
     const pathname = usePathname();
     return (
-        <nav className="grid items-start gap-2">
+        <nav className="grid text-amber-400 items-start gap-2">
       {navItems.map((item, index) => (
         <Link key={index} href={item.href}>
           <span
             className={cn(
-              "group flex items-center rounded-md px-10 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground",
-              pathname === item.href ? "bg-accent" : "bg-transparent"
+              "group flex items-center rounded-md px-10 py-2 text-sm font-medium hover:bg-green-800 hover:text-green-400",
+              pathname === item.href ? "bg-green-900" : "bg-transparent"
             )}
           >
             <item.icon className="mr-2 h-4 w-4 text-primary" />
