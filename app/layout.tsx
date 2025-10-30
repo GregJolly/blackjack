@@ -32,13 +32,19 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider>
+    <ClerkProvider
+    afterSignInUrl={"/dashboard/game"}
+    afterSignUpUrl={"/dashboard/game"}
+    afterSignOutUrl={"/"}
+    >
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased  bg-gradient-to-br from-emerald-900 via-emerald-800 to-teal-900`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen bg-gradient-to-br from-emerald-900 via-emerald-800 to-teal-900`}
       >
         <Navbar /> 
+        
         {children}
+    
       </body>
     </html>
     </ClerkProvider>

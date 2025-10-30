@@ -1,11 +1,14 @@
 "use client";
 import { Button } from "@/components/ui/button";
+import { SignedOut, SignIn, SignInButton } from "@clerk/nextjs";
 import { faCat } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 
 import { redirect } from "next/navigation";
 
 export default function Home() {
+
+ 
 
   return (
     <section className="flex items-center justify-center  h-[90vh]">
@@ -28,12 +31,17 @@ export default function Home() {
             </p>
           </div>
           <div className="flex justify-center mt-8 space-x-4">
-            <Button
-              onClick={() => redirect("/dashboard/game")}
-              className="px-6 py-6 text-lg font-semibold text-black bg-amber-400 hover:bg-amber-300"
-            >
-              Play Now
-            </Button>
+            <SignedOut>
+            <SignInButton>
+              <Button
+                onClick={() => redirect("/dashboard/game")}
+                className="px-6 py-6 text-lg font-semibold text-black bg-amber-400 hover:bg-amber-300"
+              >
+                Play Now
+              </Button>
+            </SignInButton>
+            </SignedOut>
+            
 
         </div>
       </div>

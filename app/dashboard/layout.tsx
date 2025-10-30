@@ -1,18 +1,28 @@
+import { SignedIn } from "@clerk/nextjs";
 import DashboardNav from "../components/DashboardNav";
 
 export default function DashboardLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
-  return(
-    <div className="flex flex-col space-y-6 max-w-7xl mx-auto mt-10">
-    <div className="container grid flex-1 gap-12 md:grid-cols-[200px_1fr]">
-      <aside className="hidden  w-[200px] flex-col md:flex">
-        <DashboardNav />
-      </aside>
-      <main className="overflow-hidden">{children}</main>
+}) {
+  return (
+    
+    <div className="min-h-screen w-full bg-green-950/5 flex justify-center">
+      <div className="flex flex-col md:flex-row w-full max-w-4xl md:max-w-6xl lg:max-w-7xl p-4 md:p-8 gap-6">
+        {/* Sidebar */}
+        <div className="w-[220px] border-r border-green-950/20">
+          <aside className="hidden md:flex flex-col p-4 ">
+            <DashboardNav />
+          </aside>
+        </div>
+
+        {/* Main Content */}
+        <main className="flex-1 rounded-xl p-4 md:p-6  overflow-hidden">
+          {children}
+        </main>
+      </div>
     </div>
-  </div>
-  )
+   
+  );
 }
