@@ -22,7 +22,7 @@ export default function DashboardNav() {
           <span
             className={cn(
               "group flex items-center font-extrabold rounded-md px-10 py-2 text-sm  hover:bg-green-400/30 ",
-              pathname === item.href ? "bg-amber-400 text-amber-950" : "bg-transparent"
+              pathname === item.href ? "bg-amber-400 text-amber-950 hover:bg-amber-300 hover:text-amber-950" : "bg-transparent"
             )}
           >
             <item.icon className="mr-2 h-4 w-4 " />
@@ -32,4 +32,4 @@ export default function DashboardNav() {
       ))}
     </nav>
     );
-}
+} 

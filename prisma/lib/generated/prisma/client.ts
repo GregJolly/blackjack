@@ -48,3 +48,8 @@ path.join(process.cwd(), "prisma/lib/generated/prisma/libquery_engine-darwin-arm
  * 
  */
 export type Game = Prisma.GameModel
+/**
+ * Model Player
+ * 
+ */
+export type Player = Prisma.PlayerModel

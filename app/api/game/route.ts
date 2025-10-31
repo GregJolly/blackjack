@@ -1,18 +1,31 @@
-import { prisma } from "@/app/lib/db";
+
 import { createDeck } from "@/app/lib/deck";
 import { handScore } from "@/app/lib/handScore";
 import { NextResponse } from "next/server";
 import { randomUUID } from "crypto";
-import { text } from "stream/consumers";
+import { auth } from "@clerk/nextjs/server";
+import { prisma } from "@/app/lib/db";
 
 export async function POST(req: Request) {
   try {
     const { bet } = await req.json();
     const id = randomUUID();
+    const { userId } = await auth();
+    
+    const playerId = userId; 
 
+    if (!playerId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    
+
+    
     const deck = createDeck();
-    const money = 2000 - bet;
+    const newMoney = 2000 - bet;
 
+   
+
+    // 🃏 Deal cards
     const card1 = deck.pop();
     const card2 = deck.pop();
     const card3 = deck.pop();
@@ -34,45 +47,41 @@ export async function POST(req: Request) {
     let result = "";
     let win = "";
     let message = "";
-    let textColor = "" 
-    let winMoney: number = 0; 
+    let textColor = "";
+    let winMoney = 0;
     let gameOver = false;
+  
 
-    if(playerScore === 21 || dealerScore === 21)
-    {
+    // 🎯 Win/Lose logic
+    if (playerScore === 21 || dealerScore === 21) {
       gameOver = true;
       dealerHand[1].hidden = false;
     }
+
     if (playerScore === 21) {
       result = "BLACKJACK";
       win = "true";
       message = "BLACKJACK!";
       textColor = "text-green-400";
       winMoney = bet;
-      gameOver = true;
+      
     } else if (dealerScore === 21) {
-      dealerHand[1].hidden = false;
       result = "LOSE";
       win = "false";
       message = "DEALER WINS!";
       textColor = "text-red-400";
-      winMoney = bet;
-      gameOver = true;
-    }
-    else{
-      result = "";
-      win = "";
-      gameOver = false; 
+      winMoney = 0;
+    
     }
 
-    // ✅ Save to Supabase via Prisma
+    // 🎮 Save game
     const game = await prisma.game.create({
       data: {
         id,
         deck,
         dealerHand,
         playerHand,
-        playerMoney: money,
+        playerMoney: newMoney,
         bet,
         result,
         win,
@@ -80,20 +89,23 @@ export async function POST(req: Request) {
       },
     });
 
-    // ✅ Send response
+
+
+    // ✅ Return response
     return NextResponse.json({
       gameId: game.id,
+      
       dealerHand: game.dealerHand,
       playerHand: game.playerHand,
-      playerMoney: game.playerMoney,
-      betMoney: game.bet,
-      result: game.result,
-      win: game.win,
-      gameOver: game.gameOver,
+      playerMoney: newMoney,
+      betMoney: bet,
+      result,
+      win,
+      gameOver,
       message,
       textColor,
-      winMoney
-    });    
+      winMoney,
+    });
   } catch (err) {
     console.error("❌ Error creating game:", err);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });

@@ -21,3 +21,8 @@ export * from './enums';
  * 
  */
 export type Game = Prisma.GameModel
+/**
+ * Model Player
+ * 
+ */
+export type Player = Prisma.PlayerModel

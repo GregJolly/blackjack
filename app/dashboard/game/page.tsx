@@ -8,6 +8,8 @@
     import { faRotateLeft,  faCoins, faUser, faHand, faPlus, faSackDollar} from "@fortawesome/free-solid-svg-icons";
     import handleCash from "../../lib/handleCash";
     import { Card } from "../../lib/types";
+import { useUser } from "@clerk/nextjs";
+
 
 
     export default function Game() {
@@ -58,26 +60,6 @@
         }
     }
 
-    useEffect(() => {
-        const checkActive = async () => {
-            const res = await fetch("/api/activeGame", {
-            method: "GET",
-            })
-
-            const data = await res.json();
-        if(data.active) {
-            setGameId(data.active.id);
-            setDealerHand(data.active.dealerHand);
-            setPlayerHand(data.active.playerHand);
-            setMyMoney(data.active.playerMoney);
-            setBet(data.active.bet);
-            setGameStarted(true);
-        }
-        else {
-            setGameStarted(false);
-        }
-    }
-    }, [])
 
     async function displayResult() {  
         setIsResultLoading(true);
@@ -106,11 +88,13 @@
     // 🎮 Create a new game
     async function createGame(betAmount: number) {
         setIsGameLoading(true);
+
         try {
-            const res = await fetch("/api/game", {
+
+        const res = await fetch("/api/game", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ bet: betAmount }),
+        body: JSON.stringify({ bet: betAmount}),
         });
 
         const data = await res.json();
@@ -361,7 +345,7 @@
             {/* Dealer */}
             <div className="flex flex-col items-center">
                 <div className="flex justify-center items-center ml-12 p-4">
-                {dealerHand.map((card, i) => (
+                {dealerHand?.map((card, i) => (
                     <img
                     key={i}
                     src={
@@ -431,7 +415,7 @@
                 </div>
                 </h1>
                 <div className="flex justify-center items-center ml-12 p-4">
-                {playerHand.map((card, i) => (
+                {playerHand?.map((card, i) => (
                     <img
                     key={i}
                     src={

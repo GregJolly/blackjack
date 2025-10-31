@@ -4,10 +4,13 @@ import { handScore } from "@/app/lib/handScore";
 import { Card } from "@/app/lib/types";
 import { randomUUID } from "crypto";
 import { NextResponse } from "next/server";
+import { currentUser } from "@clerk/nextjs/server";
 
 export async function POST(req: Request) {
   try {
     const { oldId, bet } = await req.json();
+    const user = await currentUser();
+
 
     if (!oldId || typeof bet !== "number" || bet <= 0) {
       return NextResponse.json({ error: "Invalid data" }, { status: 400 });
@@ -89,6 +92,9 @@ export async function POST(req: Request) {
       }
 
 
+
+
+
     // ✅ Use a transaction for safety
     const [game] = await prisma.$transaction([
       prisma.game.create({
@@ -108,6 +114,8 @@ export async function POST(req: Request) {
         where: { id: oldId },
       }),
     ]);
+
+
 
     // ✅ Return the new game
     return NextResponse.json({

@@ -32,10 +32,10 @@ export default function Home() {
           </div>
           <div className="flex justify-center mt-8 space-x-4">
             <SignedOut>
-            <SignInButton>
+            <SignInButton forceRedirectUrl={"/dashboard/game"}>
               <Button
-                onClick={() => redirect("/dashboard/game")}
-                className="px-6 py-6 text-lg font-semibold text-black bg-amber-400 hover:bg-amber-300"
+                
+                className="px-6 py-6 text-lg hover:scale-110 hover:bg-amber-200 font-semibold text-black bg-amber-400 duration-200 tracking-tight"
               >
                 Play Now
               </Button>

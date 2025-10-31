@@ -15,7 +15,7 @@ datasource db {
 
 model Game {
   id           String   @id @default(uuid())
-  userId       String?
+  userId       String? 
   deck         Json
   dealerHand   Json
   playerHand   Json
@@ -26,4 +26,16 @@ model Game {
   gameOver     Boolean  @default(false)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+}
+
+model Player {
+  clerkId String @id 
+  name  String
+  email String @unique
+  money Int @default(2000)
+  highscore Int @default(0)
+  wins Int @default(0)
+  loses Int @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
