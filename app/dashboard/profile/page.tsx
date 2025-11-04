@@ -1,21 +1,13 @@
-import  {prisma}  from "@/app/lib/db";
+import { prisma } from "@/app/lib/db";
 import { auth } from "@clerk/nextjs/server";
 
 export default async function ProfilePage() {
+  const { userId } = await auth();
+  if (!userId) return <div>Please sign in.</div>;
 
-    const {userId  } = await auth();
+  const user = await prisma.player.findUnique({
+    where: { clerkId: userId },
+  });
 
-    const user = await prisma.player.findUnique({
-        where: {clerkId: userId!},
-        select: {
-            email:true
-        }
-    })
-    return (
-        <>
-        <div>
-
-        </div>
-        </>
-    )
+  return <div>{user?.email ?? "User not found"}</div>;
 }
